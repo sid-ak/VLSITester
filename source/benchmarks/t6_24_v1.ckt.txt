@@ -1,0 +1,47 @@
+$ Circuit description for figure 6.24
+$ Author: Hao Zheng
+$ Date: 04/2007
+$
+1gat $... primary input
+2gat $... primary input
+3gat $... primary input
+4gat $... primary input
+5gat $... primary input
+6gat $... primary input
+$
+$
+16gat $... primary output
+$
+$
+$ Output Type Inputs...
+$ ------ ---- ---------
+  13gat  nand 5gat  17gat
+  8gat   nand 5gat  5gat
+  12gat  nand 2gat  8gat
+  11gat  nand 4gat  17gat
+  7gat   nand 4gat  4gat
+  10gat  nand 1gat  7gat
+  18gat  and  2gat  3gat
+  17gat  nand 1gat  18gat 
+  9gat   nand 6gat  6gat
+  14gat  nand 3gat  9gat
+  15gat  nand 6gat  17gat 
+  19gat  and  10gat 11gat
+  20gat  and  12gat 13gat
+  21gat  and  14gat 15gat
+  22gat  and  19gat 20gat
+  16gat  nand 21gat 22gat
+$
+$ end of circuit description
+
+
+
+
+
+
+
+
+		
+		
+		
+
