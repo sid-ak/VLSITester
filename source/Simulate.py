@@ -22,14 +22,14 @@ def Simulate(circuit, inputVector):
             input1 = primaryIn[input1]
         else:
             temp = []
-            temp.append(simulatedGates[input1].out[0])
+            temp.append(simulatedGates[input1])
             input1 = temp
             
         if input2 in primaryIn:
             input2 = primaryIn[input2]
         else:
             temp = []
-            temp.append(simulatedGates[input2].out[0])
+            temp.append(simulatedGates[input2])
             temp2 = temp
 
         if gateType == "and":
@@ -37,9 +37,9 @@ def Simulate(circuit, inputVector):
         elif gateType == "or":
             simGate = input1 | input2
         elif gateType == "nand":
-            simGate = not(input1 & input2)
+            simGate = not(input1 and input2)
         elif gateType == "nor":
-            simGate = not(input1 | input2)
+            simGate = not(input1 or input2)
         elif gateType == "xor":
             simGate = input1 ^ input2
         elif gateType == "not":

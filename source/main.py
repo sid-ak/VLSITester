@@ -17,6 +17,7 @@ while(True):
     elif choice == "2":
         print(choice)
     elif choice == "3":
+        print("Enter your input vector " + str(len(list(circuit.values())[0]))+ " Primary Inputs")
         inputVector = input()
         #inputFault = input()
         simulation.Simulate(circuit, inputVector)
