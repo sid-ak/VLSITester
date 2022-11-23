@@ -13,9 +13,9 @@ def ReadFile():
             if line[0] == '\t':
                 tabLineCount += 1
             if line[0] != '\t' and tabLineCount == 0:
-                primaryInputs[line.split(' ')[0]] = [False]
+                primaryInputs[line.split(' ')[0]] = False
             elif line[0] != '\t' and line[0] != '\n' and tabLineCount == 1:
-                primaryOutputs[line.split(' ')[0]] = [False]
+                primaryOutputs[line.split(' ')[0]] = False
                 #gets gatedetails
             elif line[0] == '\t' and tabLineCount > 2:
                 temp = line.split('\t')[1].split('\n')[0]

@@ -1,4 +1,5 @@
 import FileReader as readFile
+import Simulate as simulation
 circuit = {}
 while(True):
     print("[0] Read the input net-list")
@@ -16,6 +17,9 @@ while(True):
     elif choice == "2":
         print(choice)
     elif choice == "3":
+        inputVector = input()
+        #inputFault = input()
+        simulation.Simulate(circuit, inputVector)
         print(choice)
     elif choice == "4":
         print(choice)
