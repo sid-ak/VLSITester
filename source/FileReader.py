@@ -2,7 +2,8 @@
 def ReadFile():
     primaryInputs = {}
     primaryOutputs = {}
-    gates = {}
+    gate = []
+    gates = []
     tabLineCount = 0
 
     file = open('netlist.txt', 'r')
@@ -30,32 +31,34 @@ def ReadFile():
                     input2 = "NONE"
                 else:
                     input2 = gateDetails[3]
-
-                if input1 in primaryInputs:
-                    input1 = primaryInputs[input1]
-                if input2 in primaryInputs:
-                    input2 = primaryInputs[input2]
-                #code function of gates here
-                if gateType == "and":
-                    gate = input1 and input2
-                    print("AND gate")
-                elif gateType == "or":
-                    gate = input1 or input2
-                    print("OR gate")
-                elif gateType == "nand":
-                    gate = not(input1 and input2)
-                    print("NAND gate")
-                elif gateType == "nor":
-                    gate = not(input1 or input2)
-                    print("NOR gate")
-                elif gateType == "xor":
-                    gate = input1 ^ input2
-                    print("XOR gate")
-                elif gateType == "not":
-                    gate = not input1
-                    print("NOT gate")
+                gate = [output, gateType, input1, input2]
+                gates.append(gate)
                 
-                gates[output] = gate
+                # if input1 in primaryInputs:
+                #     input1 = primaryInputs[input1]
+                # if input2 in primaryInputs:
+                #     input2 = primaryInputs[input2]
+                # #code function of gates here
+                # if gateType == "and":
+                #     gate = input1 and input2
+                #     print("AND gate")
+                # elif gateType == "or":
+                #     gate = input1 or input2
+                #     print("OR gate")
+                # elif gateType == "nand":
+                #     gate = not(input1 and input2)
+                #     print("NAND gate")
+                # elif gateType == "nor":
+                #     gate = not(input1 or input2)
+                #     print("NOR gate")
+                # elif gateType == "xor":
+                #     gate = input1 ^ input2
+                #     print("XOR gate")
+                # elif gateType == "not":
+                #     gate = not input1
+                #     print("NOT gate")
+                
+                # gates[output] = gate
 
 
 

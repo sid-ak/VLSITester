@@ -22,4 +22,4 @@ while(True):
     elif choice =="5":
         print(choice)
         break
-
+    print(circuit)
