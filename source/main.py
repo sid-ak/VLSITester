@@ -11,7 +11,6 @@ while(True):
     choice = input()
     if choice == "0":
         circuit = readFile.ReadFile()
-        print(choice)
     elif choice == "1":
         print(choice)
     elif choice == "2":
