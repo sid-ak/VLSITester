@@ -1,5 +1,5 @@
 
-def Simulate(circuit, inputVector):
+def Simulate(circuit, inputVector, setOfFaults):
     simulatedGates = {}
     primaryIn = list(circuit.values())[0]
     for key in primaryIn:
@@ -45,5 +45,6 @@ def Simulate(circuit, inputVector):
         elif gateType == "not":
             simGate = not(input1)
         simulatedGates[output] = simGate
-
+    if(setOfFaults != ""):
+        print("There is a fault")
     print(simulatedGates)

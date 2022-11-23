@@ -1,5 +1,5 @@
 
-def ReadFile():
+def ReadFile() -> dict:
     primaryInputs = {}
     primaryOutputs = {}
     gate = []
@@ -35,9 +35,9 @@ def ReadFile():
                 gates.append(gate)
 
     file.close()
-    print(primaryInputs)
-    print(primaryOutputs)
-    print(gates)
+    # print(primaryInputs)
+    # print(primaryOutputs)
+    # print(gates)
     return {
         "PrimaryInputs" : primaryInputs,
         "PrimaryOutputs" : primaryOutputs,

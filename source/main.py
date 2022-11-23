@@ -1,6 +1,7 @@
 import FileReader as readFile
 import Simulate as simulation
 circuit = {}
+gates = []
 while(True):
     print("[0] Read the input net-list")
     print("[1] Preform fault collapsing")
@@ -17,10 +18,9 @@ while(True):
     elif choice == "2":
         print(choice)
     elif choice == "3":
-        inputVector = input("Enter your input vector " + str(len(list(circuit.values())[0]))+ " Primary Inputs")
-        inputFault = input("Enter your Fault")
-        simulation.Simulate(circuit, inputVector)
-        print(choice)
+        inputVector = input("Enter your input vector " + str(len(list(circuit.values())[0]))+ " Primary Inputs: ")
+        setOfFaults = input("Input the set of faults (EX: gate1 Sa0): ")
+        simulation.Simulate(circuit, inputVector, setOfFaults)
     elif choice == "4":
         print(choice)
     elif choice == "5":
