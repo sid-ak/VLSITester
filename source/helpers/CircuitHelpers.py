@@ -9,11 +9,11 @@ class CircuitHelpers:
         
         print("\nPrimary Inputs")
         PrintHelpers.PrintThinDivider()
-        for primaryInput in circuit.PrimaryInputs: print(primaryInput.Name)
+        for primaryInput in circuit.PrimaryInputs: print(primaryInput.Wire)
         
         print("\nPrimary Outputs")
         PrintHelpers.PrintThinDivider()
-        for primaryOutput in circuit.PrimaryOutputs: print(primaryOutput.Name)
+        for primaryOutput in circuit.PrimaryOutputs: print(primaryOutput.Wire)
 
         print("\nGates")
         PrintHelpers.PrintThinDivider()

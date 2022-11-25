@@ -1,9 +1,9 @@
 class Input:
-    Name: str
+    Wire: str
     IsPrimary: bool
     Value: int
 
-    def __init__(self, name: str, isPrimary: bool, value: int = -1):
-        self.Name = name
+    def __init__(self, wire: str, isPrimary: bool, value: int = -1):
+        self.Wire = wire
         self.IsPrimary = isPrimary
         self.Value = value

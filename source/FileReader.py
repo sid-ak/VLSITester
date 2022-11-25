@@ -54,25 +54,25 @@ def ReadFile() -> Circuit:
             
             # Get primary inputs.
             if line.lower().find(PRIMARY_IN_STR) != -1:
-                primaryInputName: str = line[:MAX_CHAR_COUNT].strip()
-                if primaryInputName == "": continue
-                primaryInput: Input = Input(name = primaryInputName, isPrimary = True)
+                primaryInputWire: str = line[:MAX_CHAR_COUNT].strip()
+                if primaryInputWire == "": continue
+                primaryInput: Input = Input(wire = primaryInputWire, isPrimary = True)
                 primaryInputs.append(primaryInput)
                 continue
             
             # Get primary outputs.
             elif line.lower().find(PRIMARY_OUT_STR) != -1:
-                primaryOutputName: str = line[:MAX_CHAR_COUNT].strip()
-                if primaryOutputName == "": continue
-                primaryOutput: Output = Output(name = primaryOutputName, isPrimary = True)
+                primaryOutputWire: str = line[:MAX_CHAR_COUNT].strip()
+                if primaryOutputWire == "": continue
+                primaryOutput: Output = Output(wire = primaryOutputWire, isPrimary = True)
                 primaryOutputs.append(primaryOutput)
                 continue
 
             # Get gates: Get output.
-            outputName: str = line[:MAX_CHAR_COUNT].strip()
-            isPrimaryOut: bool = outputName in list(map(lambda e: e.Name, primaryOutputs))
-            output: Output = Output(name = outputName, isPrimary = isPrimaryOut)
-            line = line.replace(outputName, "", MAX_CHAR_COUNT).strip()
+            outputWire: str = line[:MAX_CHAR_COUNT].strip()
+            isPrimaryOut: bool = outputWire in list(map(lambda e: e.Wire, primaryOutputs))
+            output: Output = Output(wire = outputWire, isPrimary = isPrimaryOut)
+            line = line.replace(outputWire, "", MAX_CHAR_COUNT).strip()
 
             # Get gates: Get gate types.
             typeName: str = line[:MAX_CHAR_COUNT].strip()
@@ -82,16 +82,16 @@ def ReadFile() -> Circuit:
             # Get gates: Get inputs.
             inputs: list[Input] = []
             
-            firstInputName: str = line[:MAX_CHAR_COUNT].strip()
-            isPrimaryIn: bool = firstInputName in list(map(lambda e: e.Name, primaryInputs))
-            firstInput: Input = Input(name = firstInputName, isPrimary = isPrimaryIn)
-            line = line.replace(firstInputName, "", MAX_CHAR_COUNT).strip()
+            firstInputWire: str = line[:MAX_CHAR_COUNT].strip()
+            isPrimaryIn: bool = firstInputWire in list(map(lambda e: e.Wire, primaryInputs))
+            firstInput: Input = Input(wire = firstInputWire, isPrimary = isPrimaryIn)
+            line = line.replace(firstInputWire, "", MAX_CHAR_COUNT).strip()
             inputs.append(firstInput)
             
-            secondInputName: str = line[:MAX_CHAR_COUNT].strip()
-            if secondInputName != "":
-                isPrimaryIn: bool = secondInputName in list(map(lambda e: e.Name, primaryInputs))
-                secondInput: Input = Input(name = secondInputName, isPrimary = isPrimaryIn)
+            secondInputWire: str = line[:MAX_CHAR_COUNT].strip()
+            if secondInputWire != "":
+                isPrimaryIn: bool = secondInputWire in list(map(lambda e: e.Wire, primaryInputs))
+                secondInput: Input = Input(wire = secondInputWire, isPrimary = isPrimaryIn)
                 inputs.append(secondInput)
 
             # Get gates: Construct gate and append.
