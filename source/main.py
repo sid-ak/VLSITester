@@ -32,19 +32,20 @@ while(True):
                 raise Exception(
                     "Please select option 0 to load a circuit first.")
             
+            # Get vector input.
             primaryInputsCount: int = len(circuit.PrimaryInputs)
-
             inputStr = input(
                 "Enter your input vector for " +
                 str(primaryInputsCount) +
                 " primary inputs (Example: 0, 1, 0, 1, 1): ")
-            
             inputVector: list[int] = VectorHelpers.GetVectorInput(
                 inputStr, primaryInputsCount)
             
+            # Get faults input.
             faultsInput: str = input("Enter faults (Example: 1gat/0, 2gat/1): ")
             faults: list[Fault] = FaultHelpers.GetFaultsInput(faultsInput)
             
+            # Simulate the circuit using the vector and faults.
             simulation.Simulate(circuit, inputVector, faults)
         
         elif choice == 4:
