@@ -42,7 +42,5 @@ while(True):
         elif choice == 5:
             break
         
-        print(circuit)
-    
     except Exception as e:
         print(f"Invalid input or something went wrong.\n{e}")
