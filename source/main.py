@@ -1,8 +1,11 @@
 import FileReader as readFile
 import Simulate as simulation
+from models.Circuit import Circuit
+from models.Fault import Fault
+from helpers.FaultHelpers import FaultHelpers
+from helpers.VectorHelpers import VectorHelpers
 
-circuit: dict = {}
-gates: list = []
+circuit: Circuit = None
 
 while(True):
     print("\n[0] Read the input net-list")
@@ -25,16 +28,24 @@ while(True):
             print("Under Construction")
 
         elif choice == 3:
+            if circuit == None:
+                raise Exception(
+                    "Please select option 0 to load a circuit first.")
             
-            inputVector = input(
-                "Enter your input vector " +
-                str(len(list(circuit.values())[0])) +
-                " Primary Inputs: ")
+            primaryInputsCount: int = len(circuit.PrimaryInputs)
+
+            inputStr = input(
+                "Enter your input vector for " +
+                str(primaryInputsCount) +
+                " primary inputs (Example: 0, 1, 0, 1, 1): ")
             
-            setOfFaults = input(
-                "Input the set of faults (EX: gate1 Sa0): ")
+            inputVector: list[int] = VectorHelpers.GetInputVector(
+                inputStr, primaryInputsCount)
             
-            simulation.Simulate(circuit, inputVector, setOfFaults)
+            faultsInput: str = input("Enter faults (Example: 1gat/0, 2gat/1): ")
+            faults: list[Fault] = FaultHelpers.GetFaultsInput(faultsInput)
+            
+            simulation.Simulate(circuit, inputVector, faults)
         
         elif choice == 4:
             print("Under Construction")
@@ -43,4 +54,4 @@ while(True):
             break
         
     except Exception as e:
-        print(f"Invalid input or something went wrong.\n{e}")
+        print(f"\nSomething went wrong.\n{e}")
