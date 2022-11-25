@@ -2,7 +2,7 @@ from helpers.CommonHelpers import CommonHelpers
 
 class VectorHelpers:
 
-    def GetInputVector(inputStr: str, primaryInputsCount: int) -> list[int]:
+    def GetVectorInput(inputStr: str, primaryInputsCount: int) -> list[int]:
 
         try:
             inputVectorStr: list[str] = inputStr.split(",")

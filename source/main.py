@@ -39,7 +39,7 @@ while(True):
                 str(primaryInputsCount) +
                 " primary inputs (Example: 0, 1, 0, 1, 1): ")
             
-            inputVector: list[int] = VectorHelpers.GetInputVector(
+            inputVector: list[int] = VectorHelpers.GetVectorInput(
                 inputStr, primaryInputsCount)
             
             faultsInput: str = input("Enter faults (Example: 1gat/0, 2gat/1): ")
