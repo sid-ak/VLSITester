@@ -16,12 +16,12 @@ class CircuitHelpers:
         print("\nPrimary Inputs")
         PrintHelpers.PrintThinDivider()
         for primaryInput in circuit.PrimaryInputs:
-            print(f"{primaryInput.Wire} ({primaryInput.Value})")
+            print(f"{primaryInput.Wire}\t({primaryInput.Value})")
         
         print("\n\nPrimary Outputs")
         PrintHelpers.PrintThinDivider()
         for primaryOutput in circuit.PrimaryOutputs:
-            print(f"{primaryOutput.Wire} ({primaryOutput.Value})")
+            print(f"{primaryOutput.Wire}\t({primaryOutput.Value})")
 
         print("\n\nGates")
         PrintHelpers.PrintThinDivider()
@@ -30,7 +30,7 @@ class CircuitHelpers:
         PrintHelpers.PrintThickDivider()
 
     # Sets the primary inputs for a circuit.
-    def SetPrimaryInputs(circuit: Circuit, inputs: list[int]) -> Circuit:
+    def SetPrimaryInputs(circuit: Circuit, inputs: list[int]):
         
         try:
             if len(circuit.PrimaryInputs) != len(inputs):
@@ -40,13 +40,18 @@ class CircuitHelpers:
             for i, primaryInput in enumerate(circuit.PrimaryInputs):
                 primaryInput.Value = inputs[i]
 
-            # Set the inputs for the gates with primary inputs.
-            primaryInputGates: list[Gate] = GateHelpers.GetGatesFromInputs(
-                circuit, circuit.PrimaryInputs)
-            for primaryInputGate in primaryInputGates:
-                GateHelpers.SetGateInputs(primaryInputGate, circuit.PrimaryInputs)
-            
-            return circuit
-
         except Exception as e:
             raise Exception(f"Could not set primary inputs.\n{e}")
+    
+    # Sets the primary outputs for a circuit.
+    def SetPrimaryOutputs(circuit: Circuit) -> Circuit:
+
+        try:
+            primaryGates: list[Gate] = list(filter(
+                lambda e: e.Output.IsPrimary == True, circuit.Gates))
+            
+            for i in range(len(circuit.PrimaryOutputs)):
+                circuit.PrimaryOutputs[i] = primaryGates[i].Output
+            
+        except Exception as e:
+            raise Exception(f"Could not set primary outputs.\n{e}")

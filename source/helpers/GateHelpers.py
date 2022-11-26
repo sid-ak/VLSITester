@@ -18,10 +18,10 @@ class GateHelpers:
             if len(gate.Inputs) > 1:
                 secondInput = gate.Inputs[1]
 
-            printStr: str = f"{gate.Output.Wire} ({gate.Output.Value}){tabs}"
+            printStr: str = f"{gate.Output.Wire}\t({gate.Output.Value}){tabs}"
             printStr += f"{gate.Type.name}{tabs}"
-            printStr += f"{firstInput.Wire} ({firstInput.Value})\t"
-            if secondInput!= None: printStr += f"{secondInput.Wire} ({secondInput.Value})"
+            printStr += f"{firstInput.Wire}\t({firstInput.Value})\t"
+            if secondInput!= None: printStr += f"{secondInput.Wire}\t({secondInput.Value})"
 
             print(printStr)
 
