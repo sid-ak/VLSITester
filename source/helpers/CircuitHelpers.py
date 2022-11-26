@@ -7,20 +7,25 @@ from models.Input import Input
 
 class CircuitHelpers:
 
-    def PrintCircuit(circuit: Circuit):
+    def PrintCircuit(circuit: Circuit, printValues = True):
         PrintHelpers.PrintThickDivider()
+
+        print(
+            "\nNote: Value of -1 signifies that the value for that wire has not been set.\n")
         
         print("\nPrimary Inputs")
         PrintHelpers.PrintThinDivider()
-        for primaryInput in circuit.PrimaryInputs: print(primaryInput.Wire)
+        for primaryInput in circuit.PrimaryInputs:
+            print(f"{primaryInput.Wire} ({primaryInput.Value})")
         
-        print("\nPrimary Outputs")
+        print("\n\nPrimary Outputs")
         PrintHelpers.PrintThinDivider()
-        for primaryOutput in circuit.PrimaryOutputs: print(primaryOutput.Wire)
+        for primaryOutput in circuit.PrimaryOutputs:
+            print(f"{primaryOutput.Wire} ({primaryOutput.Value})")
 
-        print("\nGates")
+        print("\n\nGates")
         PrintHelpers.PrintThinDivider()
-        GateHelpers.PrintGates(circuit.Gates)
+        GateHelpers.PrintGates(circuit.Gates, printValues = printValues)
 
         PrintHelpers.PrintThickDivider()
 

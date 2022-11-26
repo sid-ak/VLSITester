@@ -7,20 +7,23 @@ from models.Input import Input
 
 class GateHelpers:
 
-    def PrintGates(gates: list[Gate]):
-        tabs: str = "\t\t"
+    def PrintGates(gates: list[Gate], printValues: bool = True):
+        tabs: str = "\t\t\t"
         
-        print(f"Outputs{tabs}Type{tabs}Inputs")
+        print(f"Outputs (Value){tabs}Type{tabs}Inputs (Value)")
         PrintHelpers.PrintThinDivider()
         for gate in gates:
-            firstInputWire: str = gate.Inputs[0].Wire
-            secondInputWire: str = ""
+            firstInput: Input = gate.Inputs[0]
+            secondInput: Input = None
             if len(gate.Inputs) > 1:
-                secondInputWire = gate.Inputs[1].Wire
+                secondInput = gate.Inputs[1]
 
-            print(f"{gate.Output.Wire}{tabs}" +
-                f"{gate.Type.name}{tabs}" +
-                f"{firstInputWire}\t{secondInputWire}")
+            printStr: str = f"{gate.Output.Wire} ({gate.Output.Value}){tabs}"
+            printStr += f"{gate.Type.name}{tabs}"
+            printStr += f"{firstInput.Wire} ({firstInput.Value})\t"
+            if secondInput!= None: printStr += f"{secondInput.Wire} ({secondInput.Value})"
+
+            print(printStr)
 
     # Gets gates based on the specified inputs.
     def GetGatesFromInputs(circuit: Circuit, specifiedInputs: list[Input]) -> list[Gate]:
@@ -100,19 +103,19 @@ class GateHelpers:
             raise Exception(f"Failed to set gate output.\n{e}")
     
     def AND(firstInput: int, secondInput: int) -> int:
-        return firstInput == 1 and secondInput == 1
+        return int(firstInput == 1 and secondInput == 1)
     
     def OR(firstInput: int, secondInput: int) -> int:
-        return firstInput == 1 or secondInput == 1
+        return int(firstInput == 1 or secondInput == 1)
     
     def NAND(firstInput: int, secondInput: int) -> int:
-        return firstInput != 1 and secondInput != 1
+        return int(firstInput != 1 and secondInput != 1)
         
     def NOR(firstInput: int, secondInput: int) -> int:
-        return firstInput == 0 and secondInput == 0
+        return int(firstInput == 0 and secondInput == 0)
     
     def XOR(firstInput: int, secondInput: int) -> int:
-        return firstInput != secondInput
+        return int(firstInput != secondInput)
     
     def NOT(firstInput: int) -> int:
-        return not firstInput
+        return int(not firstInput)

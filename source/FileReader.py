@@ -105,9 +105,7 @@ def ReadFile() -> Circuit:
 
         circuit: Circuit = Circuit(primaryInputs, primaryOutputs, gates)
         print(f"\nInput File: {fileName}")
-        CircuitHelpers.PrintCircuit(circuit)
-        return circuit
-        
+        CircuitHelpers.PrintCircuit(circuit, printValues = False)
         return circuit
 
     except Exception as e:
