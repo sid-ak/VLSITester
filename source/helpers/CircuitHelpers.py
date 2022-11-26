@@ -1,6 +1,9 @@
+from enums.GateTypeEnum import GateTypeEnum
 from models.Circuit import Circuit
 from helpers.GateHelpers import GateHelpers
 from helpers.PrintHelpers import PrintHelpers
+from models.Gate import Gate
+from models.Input import Input
 
 class CircuitHelpers:
 
@@ -20,3 +23,25 @@ class CircuitHelpers:
         GateHelpers.PrintGates(circuit.Gates)
 
         PrintHelpers.PrintThickDivider()
+
+    # Sets the primary inputs for a circuit.
+    def SetPrimaryInputs(circuit: Circuit, inputs: list[int]) -> Circuit:
+        
+        try:
+            if len(circuit.PrimaryInputs) != len(inputs):
+                raise Exception(
+                    "Number of primary inputs do not equal provided inputs for circuit.")
+
+            for i, primaryInput in enumerate(circuit.PrimaryInputs):
+                primaryInput.Value = inputs[i]
+
+            # Set the inputs for the gates with primary inputs.
+            primaryInputGates: list[Gate] = GateHelpers.GetGatesFromInputs(
+                circuit, circuit.PrimaryInputs)
+            for primaryInputGate in primaryInputGates:
+                GateHelpers.SetGateInputs(primaryInputGate, circuit.PrimaryInputs)
+            
+            return circuit
+
+        except Exception as e:
+            raise Exception(f"Could not set primary inputs.\n{e}")
