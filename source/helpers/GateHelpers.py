@@ -25,26 +25,6 @@ class GateHelpers:
 
             print(printStr)
 
-    # Gets gates based on the specified inputs.
-    def GetGatesFromInputs(circuit: Circuit, specifiedInputs: list[Input]) -> list[Gate]:
-        try:
-            allGates: list[Gate] = circuit.Gates
-            if specifiedInputs == []: return allGates
-
-            specifiedInputWires: list[str] = list(map(
-                lambda e: e.Wire, specifiedInputs))
-            
-            specifiedGates: set[Gate] = set()
-            for gate in allGates:
-                for gateInput in gate.Inputs:
-                    if gateInput.Wire in specifiedInputWires:
-                        specifiedGates.add(gate)
-
-            return specifiedGates
-        
-        except Exception as e:
-            raise Exception(f"Failed to get gates from specified inputs.\n{e}")
-    
     # Sets the inputs for a gate.
     def SetGateInputs(gate: Gate, inputs: list[Input]):
         
