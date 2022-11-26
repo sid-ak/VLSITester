@@ -38,7 +38,7 @@ while(True):
                 "Enter your input vector for " +
                 str(primaryInputsCount) +
                 " primary inputs (Example: 0, 1, 0, 1, 1): ")
-            inputVector: list[int] = VectorHelpers.GetVectorInput(
+            inputs: list[int] = VectorHelpers.GetVectorInput(
                 inputStr, primaryInputsCount)
             
             # Get faults input.
@@ -46,7 +46,7 @@ while(True):
             faults: list[Fault] = FaultHelpers.GetFaultsInput(faultsInput)
             
             # Simulate the circuit using the vector and faults.
-            simulation.Simulate(circuit, inputVector, faults)
+            simulation.Simulate(circuit, inputs, faults)
         
         elif choice == 4:
             print("Under Construction")
