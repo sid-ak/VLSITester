@@ -39,13 +39,12 @@ class GateHelpers:
                 gateInput.Value = inputToSet.Value 
             
             gate.Inputs = gateInputs
-            return gate
 
         except Exception as e:
             raise Exception(f"Failed to set gate inputs.\n{e}")
     
     # Sets the outputs for a gate based on its input.k
-    def SetGateOutput(gate: Gate) -> Gate:
+    def SetGateOutput(gate: Gate):
 
         try:
             inputs: list[Input] = gate.Inputs
@@ -53,7 +52,7 @@ class GateHelpers:
             # If one of the inputs of a gate have not been set.
             for gateInput in inputs:
                 if CommonHelpers.IsNotZeroOrOne(gateInput.Value):
-                    return gate
+                    return
 
             firstInput: int = inputs[0].Value
             secondInput: int = None
@@ -77,8 +76,6 @@ class GateHelpers:
             elif gate.Type == GateTypeEnum.NOT:
                 gate.Output.Value = GateHelpers.NOT(firstInput)
             
-            return gate
-        
         except Exception as e:
             raise Exception(f"Failed to set gate output.\n{e}")
     
