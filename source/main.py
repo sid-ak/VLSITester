@@ -4,6 +4,7 @@ from models.Circuit import Circuit
 from models.Fault import Fault
 from helpers.FaultHelpers import FaultHelpers
 from helpers.VectorHelpers import VectorHelpers
+from FaultCollapser import FaultCollapser
 
 circuit: Circuit = None
 
@@ -22,7 +23,11 @@ while(True):
             circuit = readFile.ReadFile()
         
         elif choice == 1:
-            print("Under Construction")
+            if circuit == None:
+                raise Exception(
+                    "Please select option 0 to load a circuit first.")
+
+            FaultCollapser.Collapse(circuit)
         
         elif choice == 2:
             print("Under Construction")
