@@ -1,6 +1,5 @@
 from helpers.PrintHelpers import PrintHelpers
 from helpers.CommonHelpers import CommonHelpers
-from models.Circuit import Circuit
 from models.Gate import Gate
 from enums.GateTypeEnum import GateTypeEnum
 from models.Input import Input
@@ -78,7 +77,7 @@ class GateHelpers:
             
         except Exception as e:
             raise Exception(f"Failed to set gate output.\n{e}")
-    
+
     def AND(firstInput: int, secondInput: int) -> int:
         return int(firstInput == 1 and secondInput == 1)
     

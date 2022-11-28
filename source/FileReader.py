@@ -103,7 +103,7 @@ def ReadFile() -> Circuit:
         if primaryOutputs == []: raise Exception("No primary outputs found.")
         if gates == []: raise Exception("No gates found.")
 
-        circuit: Circuit = Circuit(primaryInputs, primaryOutputs, gates)
+        circuit: Circuit = Circuit(fileName, primaryInputs, primaryOutputs, gates)
         print(f"\nInput File: {fileName}")
         CircuitHelpers.PrintCircuit(circuit, printValues = False)
         return circuit
