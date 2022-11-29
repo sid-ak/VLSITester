@@ -4,6 +4,7 @@ from models.Circuit import Circuit
 from models.Gate import Gate
 from enums.GateTypeEnum import GateTypeEnum
 from models.Input import Input
+from models.Fault import Fault
 
 class GateHelpers:
 
@@ -26,7 +27,7 @@ class GateHelpers:
             print(printStr)
 
     # Sets the inputs for a gate.
-    def SetGateInputs(gate: Gate, inputs: list[Input]):
+    def SetGateInputs(gate: Gate, inputs: list[Input], fault: Fault = None):
         
         try:
             gateInputs: list[Input] = gate.Inputs
@@ -37,14 +38,22 @@ class GateHelpers:
                 if inputToSet == None: continue
                 
                 gateInput.Value = inputToSet.Value 
-            
+
+                if(fault == None): continue
+                
+                #set input values to the faulty value
+
+                if fault.Wire != gateInput.Wire: continue
+
+                gateInput.Value = fault.Value
+
             gate.Inputs = gateInputs
 
         except Exception as e:
             raise Exception(f"Failed to set gate inputs.\n{e}")
     
     # Sets the outputs for a gate based on its input.k
-    def SetGateOutput(gate: Gate):
+    def SetGateOutput(gate: Gate, fault: Fault = None):
 
         try:
             inputs: list[Input] = gate.Inputs
@@ -76,6 +85,14 @@ class GateHelpers:
             elif gate.Type == GateTypeEnum.NOT:
                 gate.Output.Value = GateHelpers.NOT(firstInput)
             
+            #set faultly value to output value
+
+            if(fault == None): return
+
+            if fault.Wire != gate.Output.Wire: return
+
+            gate.Output.Value = fault.Value
+
         except Exception as e:
             raise Exception(f"Failed to set gate output.\n{e}")
     

@@ -4,6 +4,7 @@ from helpers.GateHelpers import GateHelpers
 from helpers.PrintHelpers import PrintHelpers
 from models.Gate import Gate
 from models.Input import Input
+from models.Fault import Fault
 
 class CircuitHelpers:
 
@@ -28,9 +29,9 @@ class CircuitHelpers:
         GateHelpers.PrintGates(circuit.Gates, printValues = printValues)
 
         PrintHelpers.PrintThickDivider()
-
+        
     # Sets the primary inputs for a circuit.
-    def SetPrimaryInputs(circuit: Circuit, inputs: list[int]):
+    def SetPrimaryInputs(circuit: Circuit, inputs: list[int], fault: Fault = None):
         
         try:
             if len(circuit.PrimaryInputs) != len(inputs):
@@ -40,11 +41,18 @@ class CircuitHelpers:
             for i, primaryInput in enumerate(circuit.PrimaryInputs):
                 primaryInput.Value = inputs[i]
 
+                if(fault == None): continue
+                
+                #Set Primary inputs to the fault value
+                if fault.Wire != primaryInput.Wire: continue
+
+                primaryInput.Value = fault.Value
+
         except Exception as e:
             raise Exception(f"Could not set primary inputs.\n{e}")
     
     # Sets the primary outputs for a circuit.
-    def SetPrimaryOutputs(circuit: Circuit) -> Circuit:
+    def SetPrimaryOutputs(circuit: Circuit):
 
         try:
             primaryGates: list[Gate] = list(filter(
