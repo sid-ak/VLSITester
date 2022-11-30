@@ -1,5 +1,6 @@
 import FileReader as readFile
 import Simulate as simulation
+import DAlgo as DAlgorithm
 from models.Circuit import Circuit
 from models.Fault import Fault
 from helpers.FaultHelpers import FaultHelpers
@@ -54,7 +55,15 @@ while(True):
             simulation.Simulate(circuit, inputs, faults)
         
         elif choice == 4:
-            print("Under Construction")
+            if circuit == None:
+                raise Exception(
+                    "Please select option 0 to load a circuit first.")
+            
+            # Get faults input.
+            faultsInput: str = input("Enter faults (Example: 1gat/0, 2gat/1): ")
+            faults: list[Fault] = FaultHelpers.GetFaultsInput(faultsInput, circuit)
+
+            DAlgorithm.DAlgorithm(circuit, faults)
         
         elif choice == 5:
             break

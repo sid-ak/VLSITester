@@ -6,6 +6,7 @@ from models.Gate import Gate
 from models.Input import Input
 from models.Fault import Fault
 
+
 class GateHelpers:
 
     def PrintGates(gates: list[Gate], faultyCircuit: Circuit = None):
@@ -117,3 +118,6 @@ class GateHelpers:
                 raise False
 
         return True
+
+
+

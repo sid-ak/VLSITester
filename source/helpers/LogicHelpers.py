@@ -57,3 +57,4 @@ class LogicHelpers:
             return None
         elif(gateType == GateTypeEnum.NOT):
             return None
+    
