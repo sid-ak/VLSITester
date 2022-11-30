@@ -48,7 +48,7 @@ while(True):
             
             # Get faults input.
             faultsInput: str = input("Enter faults (Example: 1gat/0, 2gat/1): ")
-            faults: list[Fault] = FaultHelpers.GetFaultsInput(faultsInput)
+            faults: list[Fault] = FaultHelpers.GetFaultsInput(faultsInput, circuit)
             
             # Simulate the circuit using the vector and faults.
             simulation.Simulate(circuit, inputs, faults)
