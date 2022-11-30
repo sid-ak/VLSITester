@@ -31,7 +31,7 @@ class WireHelpers:
                 if wireSet.add(primaryInput.Wire):
                     wires.add(Wire(
                         name = primaryInput.Wire,
-                        isPrimary = primaryInput.IsPrimary,
+                        isPrimaryInput = primaryInput.IsPrimary,
                         isFanout = primaryInput.IsFanout,
                     ))
             
@@ -41,7 +41,7 @@ class WireHelpers:
                 if wireSet.add(primaryOutput.Wire):
                     wires.add(Wire(
                         name = primaryOutput.Wire,
-                        isPrimary = primaryOutput.IsPrimary,
+                        isPrimaryOutput = primaryOutput.IsPrimary,
                         isFanout = primaryOutput.IsFanout,
                     ))
             
@@ -52,20 +52,19 @@ class WireHelpers:
                     if wireSet.add(gateInput.Wire):
                         wires.add(Wire(
                             name = gateInput.Wire,
-                            isPrimary = gateInput.IsPrimary,
+                            isPrimaryInput = gateInput.IsPrimary,
                             isFanout = gateInput.IsFanout,
                         ))
                 
                 if wireSet.add(gate.Output.Wire):
                     wires.add(Wire(
                         name = gate.Output.Wire,
-                        isPrimary = gate.Output.IsPrimary,
+                        isPrimaryOutput = gate.Output.IsPrimary,
                         isFanout = gate.Output.IsFanout,
                     ))
 
             sortedWires: set[Wire] = WireHelpers.SortedWires(wires)
-            for wire in sortedWires:
-                print(vars(wire))
+            return sortedWires
 
         except:
             raise Exception(f"Unable to get all wires from circuit {circuit.Name}\n{e}")

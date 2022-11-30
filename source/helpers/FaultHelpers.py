@@ -1,8 +1,7 @@
+from helpers.WireHelpers import WireHelpers
 from models.Fault import Fault
 from models.Circuit import Circuit
-from models.Gate import Gate
-from models.Input import Input
-from models.Output import Output
+from models.Wire import Wire
 
 class FaultHelpers: 
 
@@ -30,13 +29,16 @@ class FaultHelpers:
     def PrintFaults(faults: set[Fault]):
         if faults == []: return
 
-        for fault in faults:
-            print(f"\t{fault.Wire}/{fault.Value}")
+        for i, fault in enumerate(faults):
+            i += 1
+            print(f"\t{i}. {fault.Wire}/{fault.Value}")
+        
+        print(f"\n\tFault Universe Count: {i}\n")
     
     def SortedFaults(faults: set[Fault]) -> set[Fault]:
         try:
             sortedFaults: set[Fault] = sorted(
-                faults, key = lambda e: int(e.Wire.rstrip("gat")))
+                faults, key = lambda e: int(e.Wire.rstrip("gat")) + e.Value)
             return sortedFaults
 
         except:
@@ -47,37 +49,23 @@ class FaultHelpers:
     def GetFaultUniverse(circuit: Circuit) -> set[Fault]:
 
         try:
-            faultUniverse: set[Fault] = set()
-            for gate in circuit.Gates:
-                gateFaults: set[Fault] = FaultHelpers.GetAllGateFaults(gate)
-                faultUniverse.update(gateFaults)
+            wires: set[Wire] = WireHelpers.GetAllWires(circuit)
             
-            sortedFaults: set[Fault] = FaultHelpers.SortedFaults(faultUniverse)
-            return sortedFaults
-
-        except Exception as e:
-            raise Exception(
-                f"\nSomething went wrong while getting fault universe for circuit {circuit.Name}.\n{e}\n")
-
-    def GetAllGateFaults(gate: Gate) -> set[Fault]:
-
-        try:
-            faults: set[Fault] = set()
-
-            inputs: list[Input] = gate.Inputs
-            output: Output = gate.Output
-
-            # Append input faults.
-            for gateInput in inputs:
-                faults.add(Fault(gateInput.Wire, 0))
-                faults.add(Fault(gateInput.Wire, 1))
+            faults: list[Fault] = []
+            for wire in wires:
+                if wire.IsPrimaryInput:
+                    faults.append(Fault(wire.Name, 0))
+                    faults.append(Fault(wire.Name, 1))
             
-            # Append output faults.
-            faults.add(Fault(output.Wire, 0))
-            faults.add(Fault(output.Wire, 1))
-
+            for wire in wires:
+                if wire.IsFanout:
+                    faults.append(Fault(f"{wire.Name}_2", 0))
+                    faults.append(Fault(f"{wire.Name}_2", 1))
+                    faults.append(Fault(f"{wire.Name}_3", 0))
+                    faults.append(Fault(f"{wire.Name}_3", 1))
+                
             return faults
 
         except Exception as e:
             raise Exception(
-                f"\nSomething went wrong while getting faults for gate.\n{e}\n")
+                f"\nSomething went wrong while getting fault universe for circuit {circuit.Name}.\n{e}\n")

@@ -1,14 +1,17 @@
 class Wire:
     Name: str
-    IsPrimary: bool = False
+    IsPrimaryInput: bool = False
+    IsPrimaryOutput: bool = False
     IsFanout: bool = False
 
     def __init__(
         self,
         name: str,
-        isPrimary: bool = False,
+        isPrimaryInput: bool = False,
+        isPrimaryOutput: bool = False,
         isFanout: bool = False):
         
         self.Name = name
-        self.IsPrimary = isPrimary
+        self.IsPrimaryInput = isPrimaryInput
+        self.IsPrimaryOutput = isPrimaryOutput
         self.IsFanout = isFanout
