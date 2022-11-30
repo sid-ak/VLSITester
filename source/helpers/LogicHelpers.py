@@ -44,16 +44,16 @@ class LogicHelpers:
     def NOT(firstInput: int) -> int:
         return int(not firstInput)
 
-    def GetControlValue(gate: Gate) -> int:
-        if(gate.Type == GateTypeEnum.AND):
+    def GetControlValue(gateType: GateTypeEnum) -> int:
+        if(gateType == GateTypeEnum.AND):
             return 0
-        elif(gate.Type == GateTypeEnum.OR):
+        elif(gateType == GateTypeEnum.OR):
             return 1
-        elif(gate.Type == GateTypeEnum.NAND):
+        elif(gateType == GateTypeEnum.NAND):
             return 0
-        elif(gate.Type == GateTypeEnum.NOR):
+        elif(gateType == GateTypeEnum.NOR):
             return 1
-        elif(gate.Type == GateTypeEnum.XOR):
+        elif(gateType == GateTypeEnum.XOR):
             return None
-        elif(gate.Type == GateTypeEnum.NOT):
+        elif(gateType == GateTypeEnum.NOT):
             return None
