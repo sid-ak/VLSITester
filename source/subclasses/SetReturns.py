@@ -1,5 +1,5 @@
 # A set class that derives from set
-# but return False exception is add() or update() fails otherwise True.
+# but return False if add() or update() fails otherwise True.
 class SetReturns(set):
     
     def add(self, e):
