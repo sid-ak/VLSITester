@@ -98,14 +98,18 @@ def ReadFile() -> Circuit:
             gate: Gate = Gate(type = type, inputs = inputs, output = output)
             gates.append(gate)
 
-        # Construct, print and return circuit.
         if primaryInputs == []: raise Exception("No primary inputs found.")
         if primaryOutputs == []: raise Exception("No primary outputs found.")
         if gates == []: raise Exception("No gates found.")
 
+        # Construct circuit and set fanouts.
         circuit: Circuit = Circuit(fileName, primaryInputs, primaryOutputs, gates)
+        CircuitHelpers.SetFanouts(circuit)
+        
+        # Print the circuit.
         print(f"\nInput File: {fileName}")
-        CircuitHelpers.PrintCircuit(circuit, printValues = False)
+        CircuitHelpers.PrintCircuit(circuit)
+
         return circuit
 
     except Exception as e:

@@ -1,13 +1,14 @@
-from enums.GateTypeEnum import GateTypeEnum
 from models.Circuit import Circuit
 from helpers.GateHelpers import GateHelpers
 from helpers.PrintHelpers import PrintHelpers
 from models.Gate import Gate
 from models.Input import Input
+from models.Output import Output
+from subclasses.SetReturns import SetReturns
 
 class CircuitHelpers:
 
-    def PrintCircuit(circuit: Circuit, printValues = True):
+    def PrintCircuit(circuit: Circuit):
         PrintHelpers.PrintThickDivider()
 
         print(
@@ -25,7 +26,7 @@ class CircuitHelpers:
 
         print("\n\nGates")
         PrintHelpers.PrintThinDivider()
-        GateHelpers.PrintGates(circuit.Gates, printValues = printValues)
+        GateHelpers.PrintGates(circuit.Gates)
 
         PrintHelpers.PrintThickDivider()
 
@@ -55,3 +56,44 @@ class CircuitHelpers:
             
         except Exception as e:
             raise Exception(f"Could not set primary outputs.\n{e}")
+
+    # Sets all the fanout wires for a circuit.
+    def SetFanouts(circuit: Circuit):
+        
+        try:
+            allInputsList: list[Input] = []
+            allInputWiresSet: SetReturns[str] = SetReturns()
+            fanoutWires: list[str] = []
+
+            # Set all gate input fanouts.
+            for gate in circuit.Gates:
+                for gateInput in gate.Inputs:
+                    
+                    allInputsList.append(gateInput)
+                    
+                    if not allInputWiresSet.add(gateInput.Wire):
+                        gateInput.IsFanout = True
+                        fanoutWires.append(gateInput.Wire)
+                        
+                        fanoutInput: Input = next((
+                            e for e in allInputsList if e.Wire == gateInput.Wire), None)
+                        if fanoutInput != None: fanoutInput.IsFanout = True
+
+            # Set all primary input fanouts.
+            for fanoutWire in fanoutWires:
+                primaryInputFanout: Input = next((
+                    e for e in circuit.PrimaryInputs if e.Wire == fanoutWire), None)
+                if primaryInputFanout != None:
+                    primaryInputFanout.IsFanout = True
+            
+            # Set all gate output fanouts.
+            allOutputsList: list[Output] = list(map(lambda e: e.Output, circuit.Gates))
+            for output in allOutputsList:
+                if output.Wire in fanoutWires:
+                    output.IsFanout = True
+            
+            # Primary outputs can never fanout (as far as I know).
+            
+        except Exception as e:
+            raise Exception(
+                f"\nSomething went wrong while setting fanouts for circuit {circuit.Name}.\n{e}\n")
