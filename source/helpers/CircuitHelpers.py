@@ -24,7 +24,7 @@ class CircuitHelpers:
             if faultyCircuit != None:
                 for faultyInput in faultyCircuit.PrimaryInputs:
                     if primaryInput.Wire == faultyInput.Wire and primaryInput.Value != faultyInput.Value:
-                        inputDiff += f"->{faultyInput.Value}"
+                        inputDiff = f"->{faultyInput.Value}"
             
             print(f"{primaryInput.Wire}\t({primaryInput.Value}{inputDiff})")
 
@@ -37,7 +37,7 @@ class CircuitHelpers:
             if faultyCircuit != None:
                 for faultyOutput in faultyCircuit.PrimaryOutputs:
                     if primaryOutput.Wire == faultyOutput.Wire and primaryOutput.Value != faultyOutput.Value:
-                        outputDiff += f"->{faultyOutput.Value}"
+                        outputDiff = f"->{faultyOutput.Value}"
             
             print(f"{primaryOutput.Wire}\t({primaryOutput.Value}{outputDiff})")
 
@@ -135,11 +135,8 @@ class CircuitHelpers:
             CircuitHelpers.SetPrimaryInputs(circuit, primaryInputs, fault)
             
             # 2. Set the gate inputs and outputs.
-            inputs = copy.deepcopy(circuit.PrimaryInputs)
-            for gate in circuit.Gates:
-                GateHelpers.SetGateInputs(gate, inputs, fault)
-                GateHelpers.SetGateOutput(gate, fault)
-                inputs.append(gate.Output)
+            inputs: list[Input] = copy.deepcopy(circuit.PrimaryInputs)
+            GateHelpers.SetGateInputsOutputs(circuit.Gates, inputs, fault)
             
             # 3. Set the primary outputs for the circuit.
             CircuitHelpers.SetPrimaryOutputs(circuit)

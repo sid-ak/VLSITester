@@ -32,13 +32,13 @@ class GateHelpers:
                         faultySecondInput = faultyGate.Inputs[1]
 
                     if firstInput.Wire == faultyFirstInput.Wire and firstInput.Value != faultyFirstInput.Value:
-                        firstInputDiff += f"->{faultyFirstInput.Value}"
+                        firstInputDiff = f"->{faultyFirstInput.Value}"
                     
                     if secondInput.Wire == faultySecondInput.Wire and secondInput.Value != faultySecondInput.Value:
-                        secondInputDiff += f"->{faultySecondInput.Value}"
+                        secondInputDiff = f"->{faultySecondInput.Value}"
                     
                     if gate.Output.Wire == faultyGate.Output.Wire and gate.Output.Value != faultyGate.Output.Value:
-                        outputDiff += f"->{faultyGate.Output.Value}"
+                        outputDiff = f"->{faultyGate.Output.Value}"
 
             printStr: str = f"{gate.Output.Wire}\t({gate.Output.Value}{outputDiff}){tabs}"
             printStr += f"{gate.Type.name}{tabs}"
@@ -94,3 +94,26 @@ class GateHelpers:
 
         except Exception as e:
             raise Exception(f"Failed to set gate output.\n{e}")
+
+    # Sets all the inputs and outputs for all gates in a circuit.
+    def SetGateInputsOutputs(gates: list[Gate], inputs: list[Input], fault = None):
+        for gate in gates:
+            GateHelpers.SetGateInputs(gate, inputs, fault)
+            GateHelpers.SetGateOutput(gate, fault)
+            inputs.append(gate.Output)
+        
+        if not GateHelpers.AllGateInputsOutputsSet(gates):
+            GateHelpers.SetGateInputsOutputs(gates, inputs, fault)
+    
+    # Checks if all the gate inputs and outputs have been set for a circuit.
+    def AllGateInputsOutputsSet(gates: list[Gate]) -> bool:
+
+        for gate in gates:
+            for gateInput in gate.Inputs:
+                if gateInput.Value == -1:
+                    return False
+            
+            if gate.Output.Value == -1:
+                raise False
+
+        return True
