@@ -72,10 +72,10 @@ class FaultHelpers:
             
             for wire in wires:
                 if wire.IsFanout:
-                    faults.append(Fault(f"{wire.Name}_2", 0))
-                    faults.append(Fault(f"{wire.Name}_2", 1))
-                    faults.append(Fault(f"{wire.Name}_3", 0))
-                    faults.append(Fault(f"{wire.Name}_3", 1))
+                    faults.append(Fault(f"{wire.Name}_a", 0))
+                    faults.append(Fault(f"{wire.Name}_b", 1))
+                    faults.append(Fault(f"{wire.Name}_a", 0))
+                    faults.append(Fault(f"{wire.Name}_b", 1))
                 
             return faults
 
