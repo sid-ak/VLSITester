@@ -10,7 +10,7 @@ from models.Fault import Fault
 
 class CircuitHelpers:
 
-    def PrintCircuit(circuit: Circuit):
+    def PrintCircuit(circuit: Circuit, faultyCircuit: Circuit = None):
         PrintHelpers.PrintThickDivider()
 
         print(
@@ -19,16 +19,32 @@ class CircuitHelpers:
         print("\nPrimary Inputs")
         PrintHelpers.PrintThinDivider()
         for primaryInput in circuit.PrimaryInputs:
-            print(f"{primaryInput.Wire}\t({primaryInput.Value})")
-        
+            inputDiff: str = ""
+
+            if faultyCircuit != None:
+                for faultyInput in faultyCircuit.PrimaryInputs:
+                    if primaryInput.Wire == faultyInput.Wire and primaryInput.Value != faultyInput.Value:
+                        inputDiff: str = f"-> ({faultyInput.Value})"
+            
+            print(f"{primaryInput.Wire}\t({primaryInput.Value})", inputDiff)
+
         print("\n\nPrimary Outputs")
         PrintHelpers.PrintThinDivider()
         for primaryOutput in circuit.PrimaryOutputs:
-            print(f"{primaryOutput.Wire}\t({primaryOutput.Value})")
+            outputDiff: str = ""
+
+            if faultyCircuit != None:
+                for faultyOutput in faultyCircuit.PrimaryOutputs:
+                    if primaryOutput.Wire == faultyOutput.Wire and primaryOutput.Value != faultyOutput.Value:
+                        outputDiff: str = f"-> ({faultyOutput.Value})"
+            
+            print(f"{primaryOutput.Wire}\t({primaryOutput.Value})", outputDiff)
 
         print("\n\nGates")
         PrintHelpers.PrintThinDivider()
-        GateHelpers.PrintGates(circuit.Gates)
+        
+        if faultyCircuit != None: GateHelpers.PrintGates(faultyCircuit.Gates)
+        else: GateHelpers.PrintGates(circuit.Gates)
 
         PrintHelpers.PrintThickDivider()
         
@@ -111,7 +127,7 @@ class CircuitHelpers:
     def SimulateCircuit(
         circuit: Circuit,
         primaryInputs: list[int],
-        fault: Fault = None) -> Circuit:
+        fault: Fault = None):
 
         try:
             # 1. Set the primary inputs for the circuit.
@@ -127,7 +143,5 @@ class CircuitHelpers:
             # 3. Set the primary outputs for the circuit.
             CircuitHelpers.SetPrimaryOutputs(circuit)
 
-            return circuit
-    
         except Exception as e:
             raise Exception(f"Circuit simulation failed.\n{e}")
