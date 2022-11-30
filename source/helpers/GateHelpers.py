@@ -1,16 +1,17 @@
 from helpers.PrintHelpers import PrintHelpers
 from helpers.CommonHelpers import CommonHelpers
 from helpers.LogicHelpers import LogicHelpers
+from models.Circuit import Circuit
 from models.Gate import Gate
-from enums.GateTypeEnum import GateTypeEnum
 from models.Input import Input
 from models.Fault import Fault
 
 class GateHelpers:
 
-    def PrintGates(gates: list[Gate]):
+    def PrintGates(gates: list[Gate], faultyCircuit: Circuit = None):
         tabs: str = "\t\t\t"
         
+        # Print the gate information with any difference from the faulty gate input/output.
         print(f"Outputs (Value){tabs}Type{tabs}Inputs (Value)")
         PrintHelpers.PrintThinDivider()
         for gate in gates:
@@ -19,10 +20,30 @@ class GateHelpers:
             if len(gate.Inputs) > 1:
                 secondInput = gate.Inputs[1]
 
-            printStr: str = f"{gate.Output.Wire}\t({gate.Output.Value}){tabs}"
+            firstInputDiff: str = ""
+            secondInputDiff: str = ""
+            outputDiff: str = ""
+
+            if faultyCircuit != None:
+                for faultyGate in faultyCircuit.Gates:
+                    faultyFirstInput: Input = faultyGate.Inputs[0]
+                    faultySecondInput: Input = None
+                    if len(faultyGate.Inputs) > 1:
+                        faultySecondInput = faultyGate.Inputs[1]
+
+                    if firstInput.Wire == faultyFirstInput.Wire and firstInput.Value != faultyFirstInput.Value:
+                        firstInputDiff += f"->{faultyFirstInput.Value}"
+                    
+                    if secondInput.Wire == faultySecondInput.Wire and secondInput.Value != faultySecondInput.Value:
+                        secondInputDiff += f"->{faultySecondInput.Value}"
+                    
+                    if gate.Output.Wire == faultyGate.Output.Wire and gate.Output.Value != faultyGate.Output.Value:
+                        outputDiff += f"->{faultyGate.Output.Value}"
+
+            printStr: str = f"{gate.Output.Wire}\t({gate.Output.Value}{outputDiff}){tabs}"
             printStr += f"{gate.Type.name}{tabs}"
-            printStr += f"{firstInput.Wire}\t({firstInput.Value})\t"
-            if secondInput!= None: printStr += f"{secondInput.Wire}\t({secondInput.Value})"
+            printStr += f"{firstInput.Wire}\t({firstInput.Value}{firstInputDiff})\t"
+            if secondInput!= None: printStr += f"{secondInput.Wire}\t({secondInput.Value}{secondInputDiff})"
 
             print(printStr)
 
