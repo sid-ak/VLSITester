@@ -8,7 +8,6 @@ class FaultCollapser:
         
         try:
             faultUniverse: set[Fault] = FaultHelpers.GetFaultUniverse(circuit)
-            print("\nFault Universe:\n")
             FaultHelpers.PrintFaults(faultUniverse)
 
         except Exception as e:

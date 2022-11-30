@@ -2,6 +2,7 @@ from helpers.WireHelpers import WireHelpers
 from models.Fault import Fault
 from models.Circuit import Circuit
 from models.Wire import Wire
+from helpers.PrintHelpers import PrintHelpers
 
 class FaultHelpers: 
 
@@ -29,11 +30,15 @@ class FaultHelpers:
     def PrintFaults(faults: set[Fault]):
         if faults == []: return
 
+        PrintHelpers.PrintThickDivider()
+        print("\nFault Universe:")
+        PrintHelpers.PrintThinDivider()
         for i, fault in enumerate(faults):
             i += 1
-            print(f"\t{i}. {fault.Wire}/{fault.Value}")
+            print(f"{i}.\t{fault.Wire}/{fault.Value}")
         
-        print(f"\n\tFault Universe Count: {i}\n")
+        print(f"\nTotal:\t{i}")
+        PrintHelpers.PrintThickDivider()
     
     def SortedFaults(faults: set[Fault]) -> set[Fault]:
         try:
