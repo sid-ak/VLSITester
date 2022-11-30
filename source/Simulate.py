@@ -38,13 +38,13 @@ def Simulate(circuit: Circuit, primaryInputs: list[int], faults: list[Fault] = [
             # Print the faulty circuit.
             CircuitHelpers.PrintCircuit(faultyCircuit)
 
-            # Print the faults that propagated to the primary outputs.
             primaryOutputValues: list[int] = list(map(lambda e: e.Value, circuit.PrimaryOutputs))
             for faultyPrimaryOutput in faultyCircuit.PrimaryOutputs:
                 if faultyPrimaryOutput.Value not in primaryOutputValues:
                     fault.IsDetected = True
                     fault.DetectedOn = faultyPrimaryOutput.Wire
             
+            # Print the detected faults if any.
             if fault.IsDetected: print(f"\nResult: Detected fault {faultStr} on {fault.DetectedOn}\n")
             else: print(f"Result: Could not detect fault {faultStr} on any primary output.")
     
