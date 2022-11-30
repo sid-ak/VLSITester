@@ -1,11 +1,9 @@
 import copy
 from models.Circuit import Circuit
 from models.Fault import Fault
-from models.Gate import Gate
-from models.Output import Output
-from helpers.GateHelpers import GateHelpers
 from helpers.CircuitHelpers import CircuitHelpers
 
+# Runs a fault free and a faulty simulation for a circuit using provide primary inputs.
 def Simulate(circuit: Circuit, primaryInputs: list[int], faults: list[Fault] = []):
     try:
         if circuit == None: raise Exception(
@@ -14,49 +12,52 @@ def Simulate(circuit: Circuit, primaryInputs: list[int], faults: list[Fault] = [
         if primaryInputs == []: raise Exception(
             "No inputs provided to simulate circuit.")
 
-        faultyCircuit = copy.deepcopy(circuit)
-        
-        # 1. Set the primary inputs for the circuit.
-        CircuitHelpers.SetPrimaryInputs(circuit, primaryInputs)
-        
-        # 2. Set the gate inputs and outputs.
-        inputs = copy.deepcopy(circuit.PrimaryInputs)
-        for gate in circuit.Gates:
-            GateHelpers.SetGateInputs(gate, inputs)
-            GateHelpers.SetGateOutput(gate)
-            inputs.append(gate.Output)
-        
-        # 3. Set the primary outputs for the circuit.
-        CircuitHelpers.SetPrimaryOutputs(circuit)
+        # Run the simulation for a fault free circuit first.
+        print(f"\nLog: Simulating fault free circuit for {circuit.Name}\n")
+        CircuitHelpers.SimulateCircuit(
+            circuit = circuit,
+            primaryInputs = primaryInputs)
 
-        if(faults == []): 
+        # Make a copy of the fault free circuit.
+        faultFreeCircuit: Circuit = copy.deepcopy(circuit)
+
+        # Print the fault free simulated circuit and return if no faults.
+        if (faults == []):
             CircuitHelpers.PrintCircuit(circuit)
             return
         
-        # 1. Set the primary inptus for the faulty circuit
+        # Run the simulation for each provided fault.
         for fault in faults:
 
-            CircuitHelpers.SetPrimaryInputs(faultyCircuit, primaryInputs, fault)
+            faultStr: str = f"{fault.Wire}/{fault.Value}"
             
-            # 2. Set the gate inputs and outputs.
-            inputs = copy.deepcopy(faultyCircuit.PrimaryInputs)
-            for gate in faultyCircuit.Gates:
-                GateHelpers.SetGateInputs(gate, inputs, fault)
-                GateHelpers.SetGateOutput(gate, fault)
-                inputs.append(gate.Output)
+            # Simulate the circuit this time with the provided fault.
+            print(f"\n\nLog: Simulating fault {faultStr} for {circuit.Name}\n")
+            CircuitHelpers.SimulateCircuit(
+                circuit = circuit,
+                primaryInputs = primaryInputs,
+                fault = fault)
+            
+            # Make a copy of the faulty circuit.
+            faultyCircuit: Circuit = copy.deepcopy(circuit)
 
-            # 3. Set the primary outputs for the circuit
-            CircuitHelpers.SetPrimaryOutputs(faultyCircuit)
+            # Print the faulty circuit.
+            CircuitHelpers.PrintCircuit(faultFreeCircuit, faultyCircuit)
 
-            CircuitHelpers.PrintCircuit(faultyCircuit)
-
-            primaryOutputValues: list[int] = list(map(lambda e: e.Value, circuit.PrimaryOutputs))
-
-            for faultyPrimaryOutput in faultyCircuit.PrimaryOutputs:
-                if faultyPrimaryOutput.Value not in primaryOutputValues:
-                    print(f"{fault.Wire}/{fault.Value} propogates to output {faultyPrimaryOutput.Wire}")
-                else:
-                    print(f"{fault.Wire}/{fault.Value} does not propogate")
+            # Determine the detected faults by comparing the fault free and fault outputs.
+            faultFreeOutputs: list[int] = list(map(lambda e: e.Value, faultFreeCircuit.PrimaryOutputs))
+            for faultyOutput in faultyCircuit.PrimaryOutputs:
+                if faultyOutput.Value not in faultFreeOutputs:
+                    fault.IsDetected = True
+                    fault.DetectedOn.append(faultyOutput.Wire)
+            
+            # Print the detected faults if any.
+            if fault.IsDetected:
+                print(f"\nResult: Detected fault {faultStr} on wire(s)", *fault.DetectedOn, sep = ", ")
+            else: print(f"\nResult: Could not detect fault {faultStr} on any primary output.\n")
+            
+            # Clear faults fault detection list so to prevent appending on next run.
+            fault.DetectedOn.clear()
     
     except Exception as e:
         raise Exception(f"Could not simulate circuit.\n{e}")
