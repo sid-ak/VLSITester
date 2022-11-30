@@ -1,3 +1,4 @@
+import copy
 from models.Circuit import Circuit
 from helpers.GateHelpers import GateHelpers
 from helpers.PrintHelpers import PrintHelpers
@@ -105,3 +106,28 @@ class CircuitHelpers:
         except Exception as e:
             raise Exception(
                 f"\nSomething went wrong while setting fanouts for circuit {circuit.Name}.\n{e}\n")
+
+    # Simulates a circuit using primary inputs and returns the simulated circuit.
+    def SimulateCircuit(
+        circuit: Circuit,
+        primaryInputs: list[int],
+        fault: Fault = None) -> Circuit:
+
+        try:
+            # 1. Set the primary inputs for the circuit.
+            CircuitHelpers.SetPrimaryInputs(circuit, primaryInputs, fault)
+            
+            # 2. Set the gate inputs and outputs.
+            inputs = copy.deepcopy(circuit.PrimaryInputs)
+            for gate in circuit.Gates:
+                GateHelpers.SetGateInputs(gate, inputs, fault)
+                GateHelpers.SetGateOutput(gate, fault)
+                inputs.append(gate.Output)
+            
+            # 3. Set the primary outputs for the circuit.
+            CircuitHelpers.SetPrimaryOutputs(circuit)
+
+            return circuit
+    
+        except Exception as e:
+            raise Exception(f"Circuit simulation failed.\n{e}")
