@@ -6,7 +6,7 @@ from models.Input import Input
 
 class GateHelpers:
 
-    def PrintGates(gates: list[Gate], printValues: bool = True):
+    def PrintGates(gates: list[Gate]):
         tabs: str = "\t\t\t"
         
         print(f"Outputs (Value){tabs}Type{tabs}Inputs (Value)")

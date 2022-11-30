@@ -81,5 +81,3 @@ class FaultHelpers:
         except Exception as e:
             raise Exception(
                 f"\nSomething went wrong while getting faults for gate.\n{e}\n")
-
-        
