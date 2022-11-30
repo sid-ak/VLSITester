@@ -54,9 +54,9 @@ def Simulate(circuit: Circuit, primaryInputs: list[int], faults: list[Fault] = [
 
             for faultyPrimaryOutput in faultyCircuit.PrimaryOutputs:
                 if faultyPrimaryOutput.Value not in primaryOutputValues:
-                    print(f"{fault.Wire}/{fault.Value} propogates to output {faultyPrimaryOutput.Wire}")
+                    print(f"{fault.Wire}/{fault.Value} propagates to output {faultyPrimaryOutput.Wire}")
                 else:
-                    print(f"{fault.Wire}/{fault.Value} does not propogate")
+                    print(f"{fault.Wire}/{fault.Value} does not propagate")
     
     except Exception as e:
         raise Exception(f"Could not simulate circuit.\n{e}")
