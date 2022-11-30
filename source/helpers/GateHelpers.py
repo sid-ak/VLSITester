@@ -1,5 +1,6 @@
 from helpers.PrintHelpers import PrintHelpers
 from helpers.CommonHelpers import CommonHelpers
+from helpers.LogicHelpers import LogicHelpers
 from models.Gate import Gate
 from enums.GateTypeEnum import GateTypeEnum
 from models.Input import Input
@@ -38,12 +39,9 @@ class GateHelpers:
                 
                 gateInput.Value = inputToSet.Value 
 
+                # Force fault if exists.
                 if(fault == None): continue
-                
-                #set input values to the faulty value
-
                 if fault.Wire != gateInput.Wire: continue
-
                 gateInput.Value = fault.Value
 
             gate.Inputs = gateInputs
@@ -62,53 +60,16 @@ class GateHelpers:
                 if CommonHelpers.IsNotZeroOrOne(gateInput.Value):
                     return
 
+            # Set the gate output.
             firstInput: int = inputs[0].Value
             secondInput: int = None
             if len(inputs) > 1: secondInput = inputs[1].Value
-
-            if gate.Type == GateTypeEnum.AND:
-                gate.Output.Value = GateHelpers.AND(firstInput, secondInput)
+            gate.Output.Value = LogicHelpers.GetLogicValue(gate.Type, firstInput, secondInput)
             
-            elif gate.Type == GateTypeEnum.OR:
-                gate.Output.Value = GateHelpers.OR(firstInput, secondInput)
-            
-            elif gate.Type == GateTypeEnum.NAND:
-                gate.Output.Value = GateHelpers.NAND(firstInput, secondInput)
-            
-            elif gate.Type == GateTypeEnum.NOR:
-                gate.Output.Value = GateHelpers.NOR(firstInput, secondInput)
-            
-            elif gate.Type == GateTypeEnum.XOR:
-                gate.Output.Value = GateHelpers.XOR(firstInput, secondInput)
-            
-            elif gate.Type == GateTypeEnum.NOT:
-                gate.Output.Value = GateHelpers.NOT(firstInput)
-            
-            #set faultly value to output value
-
+            # Force fault if exists.
             if(fault == None): return
-
             if fault.Wire != gate.Output.Wire: return
-
             gate.Output.Value = fault.Value
 
         except Exception as e:
             raise Exception(f"Failed to set gate output.\n{e}")
-
-    def AND(firstInput: int, secondInput: int) -> int:
-        return int(firstInput == 1 and secondInput == 1)
-    
-    def OR(firstInput: int, secondInput: int) -> int:
-        return int(firstInput == 1 or secondInput == 1)
-    
-    def NAND(firstInput: int, secondInput: int) -> int:
-        return int(firstInput != 1 and secondInput != 1)
-        
-    def NOR(firstInput: int, secondInput: int) -> int:
-        return int(firstInput == 0 and secondInput == 0)
-    
-    def XOR(firstInput: int, secondInput: int) -> int:
-        return int(firstInput != secondInput)
-    
-    def NOT(firstInput: int) -> int:
-        return int(not firstInput)
