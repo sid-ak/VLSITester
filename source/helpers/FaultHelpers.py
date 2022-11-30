@@ -3,19 +3,26 @@ from models.Fault import Fault
 from models.Circuit import Circuit
 from models.Wire import Wire
 from helpers.PrintHelpers import PrintHelpers
+from helpers.CommonHelpers import CommonHelpers
 
 class FaultHelpers: 
 
-    def GetFaultsInput(faultsInput: str) -> list[Fault]:
+    def GetFaultsInput(faultsInput: str, circuit: Circuit) -> list[Fault]:
         
         if faultsInput == "": return []
+        allWires: list[Wire] = WireHelpers.GetAllWires(circuit)
+        allWireNames: list[str] = list(map(lambda e: e.Name, allWires))
 
         try:
             faultsStr: list[str] = faultsInput.split(",")
             faults: list[Fault] = []
             for faultStr in faultsStr:
                 wire: str = faultStr.split("/")[0].strip()
+                if wire not in allWireNames: raise Exception("Wire does not exist.")
+                
                 value: int = int(faultStr.split("/")[1])
+                if CommonHelpers.IsNotZeroOrOne(value): raise Exception("Fault value not 0 or 1.")
+
                 fault: Fault = Fault(wire, value)
                 faults.append(fault)
             
@@ -24,8 +31,9 @@ class FaultHelpers:
         except Exception as e:
             raise Exception(f"Invalid faults input.\n" +
                 "Faults must be separated by commas and must be in the format:" +
-                "<input/output name>/<fault value>\n" +
-                f"Example: 1gat/0, 2gat/1\n{e}\n")
+                "<wireName>/<faultValue>\n" +
+                f"Example: 1gat/0, 2gat/1\n" +
+                f"Also ensure that the wire exists and the fault value is is a 0 or 1.\n{e}\n")
 
     def PrintFaults(faults: set[Fault]):
         if faults == []: return
