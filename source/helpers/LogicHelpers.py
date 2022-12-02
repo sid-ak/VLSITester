@@ -45,16 +45,10 @@ class LogicHelpers:
         return int(not firstInput)
 
     def GetControlValue(gateType: GateTypeEnum) -> int:
-        if(gateType == GateTypeEnum.AND):
-            return 0
-        elif(gateType == GateTypeEnum.OR):
-            return 1
-        elif(gateType == GateTypeEnum.NAND):
-            return 0
-        elif(gateType == GateTypeEnum.NOR):
-            return 1
-        elif(gateType == GateTypeEnum.XOR):
-            return None
-        elif(gateType == GateTypeEnum.NOT):
-            return None
-    
+
+        if gateType == GateTypeEnum.AND: return 0
+        elif gateType == GateTypeEnum.OR: return 1
+        elif gateType == GateTypeEnum.NAND: return 0
+        elif gateType == GateTypeEnum.NOR: return 1
+        elif gateType == GateTypeEnum.XOR: return None
+        elif gateType == GateTypeEnum.NOT: return None

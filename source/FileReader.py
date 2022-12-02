@@ -22,7 +22,7 @@ def GetFileNames() -> list[str]:
         "t6_24.ckt"
     ]
 
-def ReadFile() -> Circuit:
+def ReadFile(circuitName: str = "") -> Circuit:
     
     try:
 
@@ -32,7 +32,24 @@ def ReadFile() -> Circuit:
         for i, name in enumerate(fileNames): print(f"[{i}] {name}")
         fileNameSelection: str = int(input("\nSelection: "))
         fileName: str = fileNames[fileNameSelection]
-        filePath: str = os.path.join("benchmarks", fileName)
+        if circuitName != "": fileName = circuitName        
+        
+        # Build the circuit.
+        circuit: Circuit = ReadCircuit(fileName)
+        
+        # Print the circuit.
+        print(f"\nInput File: {fileName}")
+        CircuitHelpers.PrintCircuit(circuit)
+
+        return circuit
+
+    except Exception as e:
+        raise Exception(
+            f"Something went wrong while reading inputs from file {fileName}.\n{e}")
+
+def ReadCircuit(fileName: str) -> Circuit:
+    
+    try:
 
         # Initialize primary inputs/outputs and gates.
         primaryInputs: list[Input] = []
@@ -40,6 +57,7 @@ def ReadFile() -> Circuit:
         gates: list[Gate] = []
 
         # Open the file and get all lines.
+        filePath: str = os.path.join("benchmarks", fileName)
         with open(filePath, 'r') as file:
             lines: list[str] = file.readlines()
 
@@ -105,13 +123,8 @@ def ReadFile() -> Circuit:
         # Construct circuit and set fanouts.
         circuit: Circuit = Circuit(fileName, primaryInputs, primaryOutputs, gates)
         CircuitHelpers.SetFanouts(circuit)
-        
-        # Print the circuit.
-        print(f"\nInput File: {fileName}")
-        CircuitHelpers.PrintCircuit(circuit)
 
         return circuit
-
+    
     except Exception as e:
-        raise Exception(
-            f"Something went wrong while reading inputs from file {fileName}.\n{e}")
+        raise Exception(f"Unable to read circuit from file {filePath}\n{e}")

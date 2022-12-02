@@ -71,6 +71,33 @@ class GateHelpers:
         except Exception as e:
             raise Exception(f"Failed to set gate inputs.\n{e}")
     
+    # Sets the inputs for a gate while considering fanouts.
+    def SetGateFanouts(gates: list[Gate]):
+
+        try:
+            fanoutInputWires: list[str] = []
+            for gate in gates:
+                firstInput: Input = gate.Inputs[0]
+                secondInput: Input = None
+                if len(gate.Inputs) > 1: secondInput = gate.Inputs[1]
+
+                if firstInput.IsFanout:
+                    if firstInput.Wire not in fanoutInputWires:
+                        fanoutInputWires.append(firstInput.Wire) 
+                        firstInput.Wire = f"{firstInput.Wire}_a"
+                    else:
+                        firstInput.Wire = f"{firstInput.Wire}_b"
+                
+                if secondInput != None and secondInput.IsFanout:
+                    if secondInput.Wire not in fanoutInputWires:
+                        fanoutInputWires.append(secondInput.Wire)
+                        secondInput.Wire = f"{secondInput.Wire}_a"
+                    else:
+                        secondInput.Wire = f"{secondInput.Wire}_b"
+                
+        except Exception as e:
+            raise Exception(f"Unable to set gate fanouts.\n{e}")
+
     # Sets the outputs for a gate based on its input.k
     def SetGateOutput(gate: Gate, fault: Fault = None):
 
