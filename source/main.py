@@ -29,10 +29,17 @@ while(True):
 
             circuitName: str = circuit.Name
             circuit = readFile.ReadCircuit(circuitName)
-            FaultCollapser.Collapse(circuit)
+            collapsedFaults: list[Fault] = FaultCollapser.Collapse(circuit)
         
         elif choice == 2:
-            print("Under Construction")
+            if circuit == None:
+                raise Exception(
+                    "Please select option 0 to load a circuit first.")
+
+            circuitName: str = circuit.Name
+            circuit = readFile.ReadCircuit(circuitName)
+            collapsedFaults: list[Fault] = FaultCollapser.Collapse(
+                circuit, listCollapsedFaults = True)
 
         elif choice == 3:
             if circuit == None:
