@@ -11,12 +11,15 @@ class FaultCollapser:
         
         try:
 
+            # Get the fault universe, only checkpoint faults.
             faultUniverse: set[Fault] = FaultHelpers.GetFaultUniverse(circuit)
             print("\nFault Universe Before Collapsing:")
             FaultHelpers.PrintFaults(faultUniverse)
             
+            # Set the fanout names for the gates.
             GateHelpers.SetGateFanouts(circuit.Gates)
             
+            # Collapse the faults.
             print("\nCollapsing Input Faults")
             PrintHelpers.PrintThickDivider()
             collapsedFaults: set[Fault] = copy.deepcopy(faultUniverse)
@@ -24,6 +27,7 @@ class FaultCollapser:
                 FaultHelpers.EqualizeFaults(gate, collapsedFaults)
             PrintHelpers.PrintThickDivider()
 
+            # List the collapsed faults.
             if listCollapsedFaults:
                 print("\nFault Classes After Collapsing:")
                 FaultHelpers.PrintFaults(collapsedFaults)
