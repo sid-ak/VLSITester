@@ -56,6 +56,31 @@ def DAlgoRec(circuit: Circuit, fault: Fault, DFrontier: list[Gate], JFrontier: l
             for gate in DFrontier:
                 controlValue = LogicHelpers.GetControlValue(gate.Type)
                 
+                #get inputs of that gate w/ value -1 then set to non control value
+
+                #if this input is not a PI
+                    #add gate to J-Frontier
+                
+                #if value of both inputs == value set to output
+                    #check if output wire is PO
+                        #if not add wires where this output inputs to to d-frontier
+
+                #if DAlgoRec = Success return success
+                #if all gates from dfrontier has been tried 
+                    #return fail
+        else:
+            if(len(JFrontier) == 0): return True
+
+            #select gate from JFrontier
+            #find control value of that gate (might be easier to reverse order)
+
+            #for gate in JFrontier:
+                #find an input of gate with value -1
+                #set control value to gate.value
+                #if DAlgoRec == Success: return success
+                #set non control value to gate.value
+            #return fail
+
 
 
     except Exception as e:
