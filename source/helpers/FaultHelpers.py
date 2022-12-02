@@ -1,12 +1,28 @@
+from helpers.LogicHelpers import LogicHelpers
 from helpers.WireHelpers import WireHelpers
 from models.Fault import Fault
 from models.Circuit import Circuit
+from models.Input import Input
 from models.Wire import Wire
+from models.Gate import Gate
 from helpers.PrintHelpers import PrintHelpers
 from helpers.CommonHelpers import CommonHelpers
 
 class FaultHelpers: 
 
+    def PrintFaults(faults: set[Fault]):
+        if faults == []: return
+
+        PrintHelpers.PrintThickDivider()
+        for i, fault in enumerate(faults):
+            i += 1
+            print(f"{i}.\t{fault.Wire}/{fault.Value}")
+        
+        print(f"\nTotal:\t{i}")
+        PrintHelpers.PrintThickDivider()
+    
+
+    # Converts a faults input string to a list of Faults.
     def GetFaultsInput(faultsInput: str, circuit: Circuit) -> list[Fault]:
         
         if faultsInput == "": return []
@@ -34,20 +50,8 @@ class FaultHelpers:
                 "<wireName>/<faultValue>\n" +
                 f"Example: 1gat/0, 2gat/1\n" +
                 f"Also ensure that the wire exists and the fault value is is a 0 or 1.\n{e}\n")
-
-    def PrintFaults(faults: set[Fault]):
-        if faults == []: return
-
-        PrintHelpers.PrintThickDivider()
-        print("\nFault Universe:")
-        PrintHelpers.PrintThinDivider()
-        for i, fault in enumerate(faults):
-            i += 1
-            print(f"{i}.\t{fault.Wire}/{fault.Value}")
-        
-        print(f"\nTotal:\t{i}")
-        PrintHelpers.PrintThickDivider()
-    
+   
+    # Sorts all the faults using the wire name as the key.
     def SortedFaults(faults: set[Fault]) -> set[Fault]:
         try:
             sortedFaults: set[Fault] = sorted(
@@ -58,7 +62,8 @@ class FaultHelpers:
             sortedFaults: set[Fault] = sorted(
                 faults, key = lambda e: e.Wire.rstrip("gat"))
             return sortedFaults
-        
+    
+    # Gets a list of all checkpoint fault classes in a circuit.
     def GetFaultUniverse(circuit: Circuit) -> set[Fault]:
 
         try:
@@ -73,8 +78,8 @@ class FaultHelpers:
             for wire in wires:
                 if wire.IsFanout:
                     faults.append(Fault(f"{wire.Name}_a", 0))
-                    faults.append(Fault(f"{wire.Name}_b", 1))
-                    faults.append(Fault(f"{wire.Name}_a", 0))
+                    faults.append(Fault(f"{wire.Name}_a", 1))
+                    faults.append(Fault(f"{wire.Name}_b", 0))
                     faults.append(Fault(f"{wire.Name}_b", 1))
                 
             return faults
@@ -82,3 +87,45 @@ class FaultHelpers:
         except Exception as e:
             raise Exception(
                 f"\nSomething went wrong while getting fault universe for circuit {circuit.Name}.\n{e}\n")
+        
+    def EqualizeFaults(gate: Gate, faults: list[Fault]):
+        
+        try:
+
+            # Return if gate has only one input.
+            gateInputWires: list[Input] = list(map(lambda e: e.Wire, gate.Inputs))
+            if len(gateInputWires) < 2: return
+            
+            # Set the control value and get the names of the fault wires.
+            controlValue: int = LogicHelpers.GetControlValue(gate.Type)
+            faultWires: list[str] = list(map(lambda e: e.Wire, faults))
+            
+            # Return if both inputs of a gate are not faults.
+            firstInputWire: str = gate.Inputs[0].Wire
+            secondInputWire: str = ""
+            secondInputWire = gate.Inputs[1].Wire
+            bothInputsAreFaults: bool = firstInputWire in faultWires and secondInputWire in faultWires
+            if not bothInputsAreFaults: return
+
+            # Get the faults that match the gate input wires.
+            gateInputFaults: list[Fault] = []
+            for inputWire in gateInputWires:
+                if inputWire in faultWires:
+                    inputFaults: list[Fault] = list(filter(lambda e: e.Wire == inputWire, faults))
+                    gateInputFaults.extend(inputFaults)
+            if gateInputFaults == []: return
+            
+            # Equalize the faults.
+            for inputFault in gateInputFaults:
+                if bothInputsAreFaults and inputFault.Value == controlValue:
+                    faultToRemove: Fault = next((
+                        e for e in faults if
+                            e.Wire == inputFault.Wire
+                            and e.Value == controlValue
+                        ), None)
+                    print(f"Collapsed:\t{faultToRemove.Wire}/{faultToRemove.Value}")
+                    faults.remove(faultToRemove)
+                    return
+            
+        except Exception as e:
+            raise Exception(f"Unable to equalize faults.\n{e}")
