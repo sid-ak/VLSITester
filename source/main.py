@@ -27,6 +27,8 @@ while(True):
                 raise Exception(
                     "Please select option 0 to load a circuit first.")
 
+            circuitName: str = circuit.Name
+            circuit = readFile.ReadCircuit(circuitName)
             FaultCollapser.Collapse(circuit)
         
         elif choice == 2:
