@@ -144,7 +144,7 @@ class CircuitHelpers:
         except Exception as e:
             raise Exception(f"Circuit simulation failed.\n{e}")
 
-    def GetPrimaryOutputs(circuit: Circuit) -> bool:
+    def OutputPropagated(circuit: Circuit) -> bool:
 
         try:
             for primaryOutputs in circuit.PrimaryOutputs:
@@ -157,15 +157,15 @@ class CircuitHelpers:
             raise Exception(f"Cannot find primary outputs\n{e}")
 
 
-    def GetFaultyOutputs(circuit: Circuit, fault: Fault) -> list[Output]:
+    def GetFaultyGates(circuit: Circuit, fault: Fault) -> list[Gate]:
         try:
-            outputs: list[Output] = []
+            gates: list[Gate] = []
             for gate in circuit.Gates:
                 for gateInputs in gate.Inputs:
                     if gateInputs.Wire == fault.Wire:
-                        outputs.append(gate.Output)
+                        gates.append(gate)
 
-            return outputs
+            return gates
         except Exception as e:
-            raise Exception(f"Cannot get faulty outputs\n{e}")
+            raise Exception(f"Cannot get faulty gates\n{e}")
 

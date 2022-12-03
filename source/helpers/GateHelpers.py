@@ -4,6 +4,7 @@ from helpers.LogicHelpers import LogicHelpers
 from models.Circuit import Circuit
 from models.Gate import Gate
 from models.Input import Input
+from models.Output import Output
 from models.Fault import Fault
 
 
@@ -146,5 +147,15 @@ class GateHelpers:
 
         return True
 
+    def GetGatesFromOutput(gates: list[Gate], output: Output) -> Gate:
+        
+        try:
+            
+            for gate in gates:
+                if output.Wire == gate.Output.Wire:
+                    return gate
+            
+            return None
 
-
+        except Exception as e:
+            raise Exception(f"Unable to get gate from output.\n{e}")
