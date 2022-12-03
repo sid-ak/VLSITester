@@ -19,6 +19,8 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
             
         for fault in faults:
             
+            print(f"\nLog: Starting D-Algorithm for fault: {fault.Wire}/{fault.Value}")
+            
             # Set fault for gate.
             for gate in circuit.Gates:
                 for gateInput in gate.Inputs:
@@ -48,8 +50,6 @@ def DAlgoRec(
     gateToRemove: Gate = None) -> list[list[int]]:
     
     try:
-        print("Log: D Algorithm Started")
-
         faultyGates: list[Gate] = CircuitHelpers.GetFaultyGates(circuit, fault)
 
         if len(faultyGates) != 0:
@@ -62,14 +62,16 @@ def DAlgoRec(
             # Update the D-Frontier.
             DFrontier.update(faultyGates)
 
+        print("Log: Updated D-Frontier:")
         for gate in DFrontier:
-            print(f"Log: Added {gate.Output.Wire} to D-Frontier")
+            print(f"\t{gate.Output.Wire}")
+        print()
 
         if not CircuitHelpers.OutputPropagated(circuit):
             
             # If D-Frontier is empty, return failure.
             if len(DFrontier) == 0:
-                print("Log: DFrontier is empty")
+                print("Failure: DFrontier is empty")
                 return False
 
             # Get the first untried gate from the D-Frontier,
@@ -118,7 +120,7 @@ def DAlgoRec(
                         gateToRemove = gate)
                 
                 
-        print(f"Success: Fault propagated to {gate.Output.Wire}")
+        print(f"Success: Fault {fault.Wire}/{fault.Value} propagated to {gate.Output.Wire}")
         if len(JFrontier) == 0: return True
 
         #select gate from JFrontier
