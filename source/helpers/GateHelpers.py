@@ -7,7 +7,6 @@ from models.Input import Input
 from models.Output import Output
 from models.Fault import Fault
 
-
 class GateHelpers:
 
     def PrintGates(gates: list[Gate], faultyCircuit: Circuit = None):
