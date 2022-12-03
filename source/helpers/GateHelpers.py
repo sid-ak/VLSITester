@@ -72,6 +72,18 @@ class GateHelpers:
         except Exception as e:
             raise Exception(f"Failed to set gate inputs.\n{e}")
     
+    # Sets all the inputs for gates that have the matching input wire.
+    def SetGatesInputs(gates: list[Gate], gateInputToSet: Input):
+
+        try:
+            for gate in gates:
+                for gateInput in gate.Inputs:
+                    if gateInput.Wire == gateInputToSet.Wire:
+                        gateInput.Value = gateInputToSet.Value
+
+        except Exception as e:
+            raise Exception(f"Unable to set inputs for multiple gates.\n{e}")
+    
     # Sets the inputs for a gate while considering fanouts.
     def SetGateFanouts(gates: list[Gate]):
 
@@ -147,6 +159,7 @@ class GateHelpers:
 
         return True
 
+    # Gets the gate based on the output of that gate.
     def GetGateFromOutput(gates: list[Gate], output: Output) -> Gate:
         
         try:
@@ -160,6 +173,7 @@ class GateHelpers:
         except Exception as e:
             raise Exception(f"Unable to get gate from output.\n{e}")
     
+    # Gets the gate based on the inputs of that gate.
     def GetGatesFromInput(gates: list[Gate], gateInputToCheck: Input) -> list[Gate]:
         
         try:
