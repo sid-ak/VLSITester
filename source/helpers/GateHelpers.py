@@ -11,43 +11,50 @@ from models.Fault import Fault
 class GateHelpers:
 
     def PrintGates(gates: list[Gate], faultyCircuit: Circuit = None):
-        tabs: str = "\t\t\t"
-        
-        # Print the gate information with any difference from the faulty gate input/output.
-        print(f"Outputs (Value){tabs}Type{tabs}Inputs (Value)")
-        PrintHelpers.PrintThinDivider()
-        for gate in gates:
-            firstInput: Input = gate.Inputs[0]
-            secondInput: Input = None
-            if len(gate.Inputs) > 1:
-                secondInput = gate.Inputs[1]
+        try:
+            
+            tabs: str = "\t\t\t"
+            
+            # Print the gate information with any difference from the faulty gate input/output.
+            print(f"Outputs (Value){tabs}Type{tabs}Inputs (Value)")
+            PrintHelpers.PrintThinDivider()
+            
+            for gate in gates:
+                firstInput: Input = gate.Inputs[0]
+                secondInput: Input = None
+                if len(gate.Inputs) > 1:
+                    secondInput = gate.Inputs[1]
 
-            firstInputDiff: str = ""
-            secondInputDiff: str = ""
-            outputDiff: str = ""
+                firstInputDiff: str = ""
+                secondInputDiff: str = ""
+                outputDiff: str = ""
 
-            if faultyCircuit != None:
-                for faultyGate in faultyCircuit.Gates:
-                    faultyFirstInput: Input = faultyGate.Inputs[0]
-                    faultySecondInput: Input = None
-                    if len(faultyGate.Inputs) > 1:
-                        faultySecondInput = faultyGate.Inputs[1]
+                if faultyCircuit != None:
+                    for faultyGate in faultyCircuit.Gates:
+                        faultyFirstInput: Input = faultyGate.Inputs[0]
+                        faultySecondInput: Input = None
+                        if len(faultyGate.Inputs) > 1:
+                            faultySecondInput = faultyGate.Inputs[1]
 
-                    if firstInput.Wire == faultyFirstInput.Wire and firstInput.Value != faultyFirstInput.Value:
-                        firstInputDiff = f"->{faultyFirstInput.Value}"
-                    
-                    if secondInput.Wire == faultySecondInput.Wire and secondInput.Value != faultySecondInput.Value:
-                        secondInputDiff = f"->{faultySecondInput.Value}"
-                    
-                    if gate.Output.Wire == faultyGate.Output.Wire and gate.Output.Value != faultyGate.Output.Value:
-                        outputDiff = f"->{faultyGate.Output.Value}"
+                        if firstInput.Wire == faultyFirstInput.Wire and firstInput.Value != faultyFirstInput.Value:
+                            firstInputDiff = f"->{faultyFirstInput.Value}"
+                        
+                        if secondInput != None and faultySecondInput != None:
+                            if secondInput.Wire == faultySecondInput.Wire and secondInput.Value != faultySecondInput.Value:
+                                secondInputDiff = f"->{faultySecondInput.Value}"
+                        
+                        if gate.Output.Wire == faultyGate.Output.Wire and gate.Output.Value != faultyGate.Output.Value:
+                            outputDiff = f"->{faultyGate.Output.Value}"
 
-            printStr: str = f"{gate.Output.Wire}\t({gate.Output.Value}{outputDiff}){tabs}"
-            printStr += f"{gate.Type.name}{tabs}"
-            printStr += f"{firstInput.Wire}\t({firstInput.Value}{firstInputDiff})\t"
-            if secondInput!= None: printStr += f"{secondInput.Wire}\t({secondInput.Value}{secondInputDiff})"
+                printStr: str = f"{gate.Output.Wire}\t({gate.Output.Value}{outputDiff}){tabs}"
+                printStr += f"{gate.Type.name}{tabs}"
+                printStr += f"{firstInput.Wire}\t({firstInput.Value}{firstInputDiff})\t"
+                if secondInput != None: printStr += f"{secondInput.Wire}\t({secondInput.Value}{secondInputDiff})"
 
-            print(printStr)
+                print(printStr)
+            
+        except Exception as e:
+            raise Exception("Unable to print gates.\n{e}")
 
     # Sets the inputs for a gate.
     def SetGateInputs(gate: Gate, inputs: list[Input], fault: Fault = None):

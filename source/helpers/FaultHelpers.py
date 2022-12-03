@@ -11,16 +11,20 @@ from helpers.CommonHelpers import CommonHelpers
 class FaultHelpers: 
 
     def PrintFaults(faults: set[Fault]):
-        if faults == []: return
-
-        PrintHelpers.PrintThickDivider()
-        for i, fault in enumerate(faults):
-            i += 1
-            print(f"{i}.\t{fault.Wire}/{fault.Value}")
-        
-        print(f"\nTotal:\t{i}")
-        PrintHelpers.PrintThickDivider()
     
+        try:
+            if faults == []: return
+
+            PrintHelpers.PrintThickDivider()
+            for i, fault in enumerate(faults):
+                i += 1
+                print(f"{i}.\t{fault.Wire}/{fault.Value}")
+            
+            print(f"\nTotal:\t{i}")
+            PrintHelpers.PrintThickDivider()
+        
+        except Exception as e:
+            raise Exception(f"Unable to print faults.\n{e}")
 
     # Converts a faults input string to a list of Faults.
     def GetFaultsInput(faultsInput: str, circuit: Circuit) -> list[Fault]:
@@ -129,4 +133,3 @@ class FaultHelpers:
             
         except Exception as e:
             raise Exception(f"Unable to equalize faults.\n{e}")
-    
