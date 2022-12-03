@@ -149,19 +149,7 @@ class CircuitHelpers:
         except Exception as e:
             raise Exception(f"Circuit simulation failed.\n{e}")
 
-    def OutputPropagated(circuit: Circuit) -> bool:
-
-        try:
-            for primaryOutputs in circuit.PrimaryOutputs:
-                if primaryOutputs.Value != -1:
-                    return True
-
-            return False
-
-        except Exception as e:
-            raise Exception(f"Cannot find primary outputs\n{e}")
-
-
+    # Gets all the gates that have a fault input/output wire on them.
     def GetFaultyGates(circuit: Circuit, fault: Fault) -> list[Gate]:
         try:
             gates: list[Gate] = []
@@ -174,3 +162,21 @@ class CircuitHelpers:
         except Exception as e:
             raise Exception(f"Cannot get faulty gates\n{e}")
 
+    def SetAllPrimaryInputs(circuit: Circuit):
+        
+        try:
+            primaryInputs: list[Input] = []
+            for gate in circuit.Gates:
+                for gateInput in gate.Inputs:
+                    if gateInput.IsPrimary: primaryInputs.append(gateInput)
+
+            for primaryInput in primaryInputs:
+                
+                circuitPrimaryInput: Input = next((
+                    e for e in circuit.PrimaryInputs if e.Wire == primaryInput.Wire), None)
+                
+                if circuitPrimaryInput != None:
+                    circuitPrimaryInput.Value = primaryInput.Value
+
+        except Exception as e:
+            raise Exception(f"Failed to set all primary inputs on circuit {circuit.Name}\m{e}")
