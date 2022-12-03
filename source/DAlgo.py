@@ -63,8 +63,8 @@ def DAlgoRec(
             DFrontier.update(faultyGates)
 
         print("Log: Updated D-Frontier:")
-        for gate in DFrontier:
-            print(f"\t{gate.Output.Wire}")
+        for DFrontierGate in DFrontier:
+            print(f"\t{DFrontierGate.Output.Wire}")
         print()
 
         if not CircuitHelpers.OutputPropagated(circuit):
@@ -92,6 +92,9 @@ def DAlgoRec(
                     
                         if gateJFrontier != None:
                             JFrontier.add(gateJFrontier)
+                            print("Log: Updated J-Frontier:")
+                            for JFrontierGate in JFrontier:
+                                print(f"\t{JFrontierGate.Output.Wire}")
                     
             firstInput: Input = gate.Inputs[0]
             secondInput: Input = None
