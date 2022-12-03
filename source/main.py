@@ -28,8 +28,10 @@ while(True):
                 raise Exception(
                     "Please select option 0 to load a circuit first.")
 
+            # Reset circuit.
             circuitName: str = circuit.Name
             circuit = readFile.ReadCircuit(circuitName)
+            
             collapsedFaults: list[Fault] = FaultCollapser.Collapse(circuit)
         
         elif choice == 2:
@@ -37,8 +39,10 @@ while(True):
                 raise Exception(
                     "Please select option 0 to load a circuit first.")
 
+            # Reset circuit.
             circuitName: str = circuit.Name
             circuit = readFile.ReadCircuit(circuitName)
+            
             collapsedFaults: list[Fault] = FaultCollapser.Collapse(
                 circuit, listCollapsedFaults = True)
 
@@ -46,6 +50,10 @@ while(True):
             if circuit == None:
                 raise Exception(
                     "Please select option 0 to load a circuit first.")
+            
+            # Reset circuit.
+            circuitName: str = circuit.Name
+            circuit = readFile.ReadCircuit(circuitName)
             
             # Get vector input.
             primaryInputsCount: int = len(circuit.PrimaryInputs)
@@ -72,8 +80,10 @@ while(True):
             faultsInput: str = input("Enter faults (Example: 1gat/0, 2gat/1): ")
             faults: list[Fault] = FaultHelpers.GetFaultsInput(faultsInput, circuit)
             
+            # Reset circuit.
             circuitName: str = circuit.Name
             circuit = readFile.ReadCircuit(circuitName)
+            
             DAlgorithm.DAlgorithm(circuit, faults)
         
         elif choice == 5:
