@@ -92,7 +92,7 @@ def DAlgoRec(
                     gateInput.Value = int(not controlValue)
                     print(f"Log: Set non-control value of {gateInput.Value} to {gateInput.Wire}")
 
-                # If this input is not a PI add gate to J-Frontier.
+                # If this input is not a PI and it is untried, add gate to J-Frontier.
                 if not gateInput.IsPrimary:
                     if gateToRemove != None and gateToRemove.Output.Wire != gateInput.Wire:
                         gateJFrontier: Gate = GateHelpers.GetGateFromOutput(
@@ -134,10 +134,13 @@ def DAlgoRec(
                         gateToRemove = gate)
                 
                 
-        if gate.Output.IsPrimary:
+        if gate.Output.IsPrimary and gate.Output.Value != -1:
             print(
                 f"Success: Fault {fault.Wire}/{fault.Value} propagated to primary output {gate.Output.Wire}")
-        if len(JFrontier) == 0: return True
+        
+        if len(JFrontier) == 0:
+            print("J-Frontier is empty.")
+            return True
 
         #select gate from JFrontier
         #find control value of that gate (might be easier to reverse order)
