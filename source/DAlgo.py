@@ -5,6 +5,7 @@ from models.Input import Input
 from helpers.GateHelpers import GateHelpers
 from helpers.CircuitHelpers import CircuitHelpers
 from helpers.LogicHelpers import LogicHelpers
+from helpers.PrintHelpers import PrintHelpers
 
 # Calls the D-Algorithm and sets initial values.
 def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
@@ -19,7 +20,12 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
             
         for fault in faults:
             
-            print(f"\nLog: Starting D-Algorithm for fault: {fault.Wire}/{fault.Value}")
+            # Clear the frontiers.
+            DFrontier.clear()
+            JFrontier.clear()
+
+            print(f"\n\nLog: Starting D-Algorithm for fault: {fault.Wire}/{fault.Value}")
+            PrintHelpers.PrintThickDivider()
             
             # Set fault for gate.
             for gate in circuit.Gates:
@@ -40,6 +46,8 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
                 DFrontier,
                 JFrontier,
                 isFirstIteration = True)
+            
+            PrintHelpers.PrintThickDivider()
 
         return testVector
 
@@ -84,6 +92,7 @@ def DAlgoRec(
 
             # Get the latest untried gate from the D-Frontier.
             gate: Gate = DFrontier[0] if isFirstIteration else DFrontier[-1]
+            print(f"Log: At {gate.Output.Wire}")
             controlValue = LogicHelpers.GetControlValue(gate.Type)
             for gateInput in gate.Inputs:
                 
@@ -100,7 +109,7 @@ def DAlgoRec(
                     
                         if gateJFrontier != None:
                             JFrontier.append(gateJFrontier)
-                            print(f"Added {gateJFrontier.Output.Wire} to J-Frontier.")
+                            print(f"Log: Added {gateJFrontier.Output.Wire} to J-Frontier.")
                             print("\nLog: J-Frontier:")
                             for JFrontierGate in JFrontier:
                                 print(JFrontierGate.Output.Wire)
