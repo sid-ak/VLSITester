@@ -9,8 +9,8 @@ from helpers.LogicHelpers import LogicHelpers
 # Calls the D-Algorithm and sets initial values.
 def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
     try:
-        DFrontier: set[Gate] = set()
-        JFrontier: set[Gate] = set()
+        DFrontier: list[Gate] = list()
+        JFrontier: list[Gate] = list()
         
         if circuit == None: raise Exception("Circuit was None.")
 
@@ -34,7 +34,12 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
                 gate.Output.Value = outputFault.Value
             
             # Perform D algo.
-            testVector: list[list[int]] = DAlgoRec(circuit, fault, DFrontier, JFrontier)
+            testVector: list[list[int]] = DAlgoRec(
+                circuit,
+                fault,
+                DFrontier,
+                JFrontier,
+                isFirstIteration = True)
 
         return testVector
 
@@ -45,8 +50,9 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
 def DAlgoRec(
     circuit: Circuit,
     fault: Fault,
-    DFrontier: set[Gate],
-    JFrontier: set[Gate],
+    DFrontier: list[Gate],
+    JFrontier: list[Gate],
+    isFirstIteration: bool,
     gateToRemove: Gate = None) -> list[list[int]]:
     
     try:
@@ -56,33 +62,35 @@ def DAlgoRec(
             
             # Remove the tried gate from the D-Frontier.
             if gateToRemove != None and gateToRemove in DFrontier:
-                print(f"Log: Removing {gateToRemove.Output.Wire} from D-Frontier.")
                 DFrontier.remove(gateToRemove)
+                print(f"Log: Removed {gateToRemove.Output.Wire} from D-Frontier.")
             
             # Update the D-Frontier.
-            DFrontier.update(faultyGates)
+            DFrontier.extend(faultyGates)
+            for faultyGate in faultyGates:
+                print(f"Log: Added {faultyGate.Output.Wire} to D-Frontier.")
 
-        print("Log: Updated D-Frontier:")
-        for DFrontierGate in DFrontier:
-            print(f"\t{DFrontierGate.Output.Wire}")
+
+        print("\nLog: D-Frontier:")
+        for DFrontierGate in DFrontier: print(DFrontierGate.Output.Wire)
         print()
 
         if not CircuitHelpers.OutputPropagated(circuit):
             
             # If D-Frontier is empty, return failure.
             if len(DFrontier) == 0:
-                print("Failure: DFrontier is empty")
+                print("Failure: DFrontier is empty.")
                 return False
 
-            # Get the first untried gate from the D-Frontier,
-            gate: Gate = list(DFrontier)[0]
+            # Get the latest untried gate from the D-Frontier.
+            gate: Gate = DFrontier[0] if isFirstIteration else DFrontier[-1]
             controlValue = LogicHelpers.GetControlValue(gate.Type)
             for gateInput in gate.Inputs:
                 
                 # Get inputs of that gate w/ value -1 then set to non control value.
                 if gateInput.Value == -1:
                     gateInput.Value = int(not controlValue)
-                    print(f"Log: Set control value of {gateInput.Wire} to {gateInput.Value}")
+                    print(f"Log: Set non-control value of {gateInput.Value} to {gateInput.Wire}")
 
                 # If this input is not a PI add gate to J-Frontier.
                 if not gateInput.IsPrimary:
@@ -91,10 +99,12 @@ def DAlgoRec(
                             circuit.Gates, gateInput)
                     
                         if gateJFrontier != None:
-                            JFrontier.add(gateJFrontier)
-                            print("Log: Updated J-Frontier:")
+                            JFrontier.append(gateJFrontier)
+                            print(f"Added {gateJFrontier.Output.Wire} to J-Frontier.")
+                            print("\nLog: J-Frontier:")
                             for JFrontierGate in JFrontier:
-                                print(f"\t{JFrontierGate.Output.Wire}")
+                                print(JFrontierGate.Output.Wire)
+                            print()
                     
             firstInput: Input = gate.Inputs[0]
             secondInput: Input = None
@@ -120,10 +130,13 @@ def DAlgoRec(
                         fault = fault,
                         DFrontier = DFrontier,
                         JFrontier = JFrontier,
+                        isFirstIteration = False,
                         gateToRemove = gate)
                 
                 
-        print(f"Success: Fault {fault.Wire}/{fault.Value} propagated to {gate.Output.Wire}")
+        if gate.Output.IsPrimary:
+            print(
+                f"Success: Fault {fault.Wire}/{fault.Value} propagated to primary output {gate.Output.Wire}")
         if len(JFrontier) == 0: return True
 
         #select gate from JFrontier
