@@ -98,15 +98,16 @@ def ReadCircuit(fileName: str) -> Circuit:
             line = line.replace(typeName, "", 1).strip()
 
             # Get gates: Get inputs.
+            inputCharCount: int = 2 if fileName == "t5_26a.ckt" else MAX_CHAR_COUNT
             inputs: list[Input] = []
             
-            firstInputWire: str = line[:MAX_CHAR_COUNT].strip()
+            firstInputWire: str = line[:inputCharCount].strip()
             isPrimaryIn: bool = firstInputWire in list(map(lambda e: e.Wire, primaryInputs))
             firstInput: Input = Input(wire = firstInputWire, isPrimary = isPrimaryIn)
             line = line.replace(firstInputWire, "", 1).strip()
             inputs.append(firstInput)
             
-            secondInputWire: str = line[:MAX_CHAR_COUNT].strip()
+            secondInputWire: str = line[:inputCharCount].strip()
             if secondInputWire != "":
                 isPrimaryIn: bool = secondInputWire in list(map(lambda e: e.Wire, primaryInputs))
                 secondInput: Input = Input(wire = secondInputWire, isPrimary = isPrimaryIn)
