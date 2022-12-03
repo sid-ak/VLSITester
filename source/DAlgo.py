@@ -1,3 +1,4 @@
+import copy
 from models.Circuit import Circuit
 from models.Fault import Fault
 from models.Gate import Gate
@@ -42,19 +43,22 @@ def DAlgoRec(
     circuit: Circuit,
     fault: Fault,
     DFrontier: set[Gate],
-    JFrontier: set[Gate]) -> list[list[int]]:
+    JFrontier: set[Gate],
+    faultToPop: Fault = None) -> list[list[int]]:
     
     try:
+        print("D Algorithm Started")
+
         faultyGates: list[Gate] = CircuitHelpers.GetFaultyGates(circuit, fault)
 
         if(len(faultyGates) != 0):
+            DFrontier.remove(faultToPop)
             DFrontier.update(faultyGates)
 
         for gate in DFrontier:
             print(f"Added {gate.Output.Wire} to DFrontier")
 
         if not CircuitHelpers.OutputPropagated(circuit):
-            print("Start D ALGO")
 
             if len(DFrontier) == 0:
                 print("DFrontier is empty")
@@ -71,43 +75,56 @@ def DAlgoRec(
 
                     # If this input is not a PI add gate to J-Frontier
                     if not gateInput.IsPrimary: 
-                        gateJFrontier: Gate = GateHelpers.GetGatesFromOutput(
+                        gateJFrontier: Gate = GateHelpers.GetGateFromOutput(
                             circuit.Gates, gateInput)
                         
                         if gateJFrontier != None:
                             JFrontier.add(gateJFrontier)
                         
                 # If value of both inputs == value set to output
-                firstInput: Input = gateInput[0]
+                firstInput: Input = gate.Inputs[0]
                 secondInput: Input = None
-                if len(gate.Inputs) > 1: secondInput = gateInput[1]
+                if len(gate.Inputs) > 1: secondInput = gate.Inputs[1]
+               
                 if firstInput != -1 and secondInput != -1:
 
-                    # Set gate output.                    
+                    # Set gate output and input.
                     GateHelpers.SetGateOutput(gate)
+                    GateHelpers.SetGateInputs(gate, [gate.Output])
                     
-                    # Check if output wire is PO.
-                    if gate.Output.IsPrimary:
-
-                        #if not add wires where this output inputs to to d-frontier
-
-                #if DAlgoRec = Success return success
-                #if all gates from dfrontier has been tried 
+                    # Check if output wire is not PO.
+                    if not gate.Output.IsPrimary:
+                        
+                        # Add wires where this output inputs to to d-frontier
+                        faultToPop = copy.deepcopy(fault)
+                        fault.Wire = gate.Output.Wire
+                        fault.Value = gate.Output.Value
+                        
+                        # Call algorithm recursively with failure.
+                        DAlgoRec(
+                            circuit = circuit,
+                            fault = fault,
+                            DFrontier = DFrontier,
+                            JFrontier = JFrontier,
+                            faultToPop = faultToPop)
+                
+                
+        #if DAlgoRec = Success return success
+        #if all gates from dfrontier has been tried 
                     #return fail
-        else:
-            if(len(JFrontier) == 0): return True
 
-            #select gate from JFrontier
-            #find control value of that gate (might be easier to reverse order)
+        print("Fault Propgated")
+        if len(JFrontier) == 0: return True
 
-            #for gate in JFrontier:
-                #find an input of gate with value -1
-                #set control value to gate.value
-                #if DAlgoRec == Success: return success
-                #set non control value to gate.value
-            #return fail
+        #select gate from JFrontier
+        #find control value of that gate (might be easier to reverse order)
 
-
+        #for gate in JFrontier:
+            #find an input of gate with value -1
+            #set control value to gate.value
+            #if DAlgoRec == Success: return success
+            #set non control value to gate.value
+        #return fail
 
     except Exception as e:
         raise Exception(f"DAlgo error\n{e}")

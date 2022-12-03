@@ -72,8 +72,6 @@ while(True):
             faultsInput: str = input("Enter faults (Example: 1gat/0, 2gat/1): ")
             faults: list[Fault] = FaultHelpers.GetFaultsInput(faultsInput, circuit)
             
-            FaultHelpers.SetDFaults(faults)
-            
             circuitName: str = circuit.Name
             circuit = readFile.ReadCircuit(circuitName)
             DAlgorithm.DAlgorithm(circuit, faults)

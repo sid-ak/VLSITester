@@ -129,16 +129,4 @@ class FaultHelpers:
             
         except Exception as e:
             raise Exception(f"Unable to equalize faults.\n{e}")
-
-    def SetDFaults(faults: list[Fault]):
-        
-        try:
-            for fault in faults:
-                if fault.Value == 0:
-                    fault.Value = "D"
-                elif fault.Value == 1:
-                    fault.Value = "Dbar"
-
-        except Exception as e:
-            raise Exception(f"Unable to get D faults {e}")
     

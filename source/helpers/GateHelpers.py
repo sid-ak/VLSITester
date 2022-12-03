@@ -63,7 +63,7 @@ class GateHelpers:
                 gateInput.Value = inputToSet.Value 
 
                 # Force fault if exists.
-                if(fault == None): continue
+                if fault == None: continue
                 if fault.Wire != gateInput.Wire: continue
                 gateInput.Value = fault.Value
 
@@ -147,7 +147,7 @@ class GateHelpers:
 
         return True
 
-    def GetGatesFromOutput(gates: list[Gate], output: Output) -> Gate:
+    def GetGateFromOutput(gates: list[Gate], output: Output) -> Gate:
         
         try:
             
@@ -159,3 +159,18 @@ class GateHelpers:
 
         except Exception as e:
             raise Exception(f"Unable to get gate from output.\n{e}")
+    
+    def GetGatesFromInput(gates: list[Gate], gateInputToCheck: Input) -> list[Gate]:
+        
+        try:
+            gatesToReturn: list[Gate] = []
+            
+            for gate in gates:
+                for gateInput in gate.Inputs:
+                    if gateInputToCheck.Wire == gateInput.Wire:
+                        gatesToReturn.append(gate)
+            
+            return gatesToReturn
+
+        except Exception as e:
+            raise Exception(f"Unable to get gate from input.\n{e}")
