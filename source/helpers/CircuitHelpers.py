@@ -165,15 +165,15 @@ class CircuitHelpers:
     def SetAllPrimaryInputs(circuit: Circuit):
         
         try:
-            primaryInputs: list[Input] = []
+            gatePrimaryInputs: list[Input] = []
             for gate in circuit.Gates:
                 for gateInput in gate.Inputs:
-                    if gateInput.IsPrimary: primaryInputs.append(gateInput)
+                    if gateInput.IsPrimary: gatePrimaryInputs.append(gateInput)
 
             for primaryInput in circuit.PrimaryInputs:
                 
                 gatePrimaryInput: Input = next(
-                    (e for e in primaryInputs if e.Wire == primaryInput.Wire), None)
+                    (e for e in gatePrimaryInputs if e.Wire == primaryInput.Wire), None)
                 
                 if gatePrimaryInput != None:
                     primaryInput.Value = gatePrimaryInput.Value
