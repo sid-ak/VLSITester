@@ -74,10 +74,10 @@ def DAlgoRec(
                 print(f"Log: Removed {gateToRemove.Output.Wire} from D-Frontier.")
             
             # Update the D-Frontier.
-            DFrontier.extend(faultyGates)
             for faultyGate in faultyGates:
-                print(f"Log: Added {faultyGate.Output.Wire} to D-Frontier.")
-
+                if faultyGate not in DFrontier:
+                    DFrontier.append(faultyGate)
+                    print(f"Log: Added {faultyGate.Output.Wire} to D-Frontier.")
 
         print("\nLog: D-Frontier:")
         for DFrontierGate in DFrontier: print(DFrontierGate.Output.Wire)
@@ -143,23 +143,80 @@ def DAlgoRec(
                         gateToRemove = gate)
                 
                 
-        if gate.Output.IsPrimary and gate.Output.Value != -1:
+        if gate.Output.IsPrimary:
+            
             print(
                 f"Success: Fault {fault.Wire}/{fault.Value} propagated to primary output {gate.Output.Wire}")
         
-        if len(JFrontier) == 0:
-            print("J-Frontier is empty.")
-            return True
+            if len(JFrontier) == 0:
+                print("J-Frontier is empty.")
+                return True
 
-        #select gate from JFrontier
-        #find control value of that gate (might be easier to reverse order)
+            #select gate from JFrontier
+            #find control value of that gate (might be easier to reverse order)
 
-        #for gate in JFrontier:
-            #find an input of gate with value -1
-            #set control value to gate.value
-            #if DAlgoRec == Success: return success
-            #set non control value to gate.value
-        #return fail
+            #for gate in JFrontier:
+                #find an input of gate with value -1
+                #set control value to gate.value
+                #if DAlgoRec == Success: return success
+                #set non control value to gate.value
+            #return fail
+
+            # If not empty, then get a gate from the J-Frontier.
+            gateJFrontier: Gate = JFrontier[-1]
+            print(f"\n\nLine justification started for {gateJFrontier.Output.Wire}.")
+            PrintHelpers.PrintThinDivider()
+
+            # Get control value for the gate in J-Frontier.
+            controlValueJFrontier: int = LogicHelpers.GetControlValue(gateJFrontier.Type)
+
+            # For each input of the gate.
+            for gateInput in gateJFrontier.Inputs:
+
+                # Set the control value to the inputs.
+                if gateInput.Value == -1 and gateInput.IsPrimary:
+                    gateInput.Value = controlValueJFrontier
+                    print(f"Log: Set control value of primary input {gateInput.Wire} to {controlValueJFrontier}")
+
+                # If not primary, add gate to J-Frontier.
+                elif not gateInput.IsPrimary:
+                    gateJFrontierToAdd: Gate = GateHelpers.GetGateFromOutput(circuit.Gates, gateInput)
+                    JFrontier.append(gateJFrontierToAdd)
+                    print(f"Log: Added {gateJFrontierToAdd.Output.Wire} to J-Frontier.")
+
+            gateInputValues: list[int] = list(map(lambda e: e.Value, gateJFrontier.Inputs))
+            
+            # If justified, remove justified gate from J-Frontier.
+            if -1 not in gateInputValues:
+                circuitGate: Gate = GateHelpers.GetGateFromOutput(
+                    circuit.Gates, gateJFrontier.Output)
+                GateHelpers.SetGateOutput(circuitGate)
+                GateHelpers.SetGatesInputs(circuit.Gates, gateJFrontier.Output)
+                JFrontier.remove(gateJFrontier)
+                print(f"Log: Removed {gateJFrontier.Output.Wire} from J-Frontier.")
+                
+                print("\nLog: J-Frontier:")
+                for JFrontierGate in JFrontier:
+                    print(JFrontierGate.Output.Wire)
+                    print()
+
+                # Remove from D-Frontier if exists.
+                if gateJFrontier in DFrontier:
+                    DFrontier.remove(gateJFrontier)
+                    print(f"Log: Removed {gateJFrontier.Output.Wire} from D-Frontier.")
+                    
+                    print("\nLog: D-Frontier:")
+                    for DFrontierGate in DFrontier:
+                        print(DFrontierGate.Output.Wire)
+                        print()
+                
+            # Call recursively.
+            DAlgoRec(
+                circuit = circuit,
+                fault = fault,
+                DFrontier = DFrontier,
+                JFrontier = JFrontier,
+                isFirstIteration = False)
 
     except Exception as e:
         raise Exception(f"DAlgo error\n{e}")
