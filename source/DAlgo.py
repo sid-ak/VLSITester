@@ -1,3 +1,4 @@
+from enums.GateTypeEnum import GateTypeEnum
 from models.Circuit import Circuit
 from models.Fault import Fault
 from models.Gate import Gate
@@ -8,8 +9,12 @@ from helpers.LogicHelpers import LogicHelpers
 from helpers.PrintHelpers import PrintHelpers
 from models.Output import Output
 
+faultyWires: list[str] = []
+DAlgoSuccess: bool
+
 # Calls the D-Algorithm and sets initial values.
 def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
+    
     try:
         DFrontier: list[Gate] = list()
         JFrontier: list[Gate] = list()
@@ -41,16 +46,19 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
                 gate.Output.Value = outputFault.Value
             
             # Perform D algo.
-            testVector: list[list[int]] = DAlgoRec(
+            DAlgoRec(
                 circuit,
                 fault,
                 DFrontier,
                 JFrontier,
                 isFirstIteration = True)
+            print(DAlgoSuccess)
+            if DAlgoSuccess:
+                CircuitHelpers.SetAllPrimaryInputs(circuit)
+                for primaryInput in circuit.PrimaryInputs:
+                    print(f"{primaryInput.Wire} - {primaryInput.Value}")
             
             PrintHelpers.PrintThickDivider()
-
-        return testVector
 
     except Exception as e:
         raise Exception(f"DAlgorithm error\n{e}")
@@ -62,10 +70,14 @@ def DAlgoRec(
     DFrontier: list[Gate],
     JFrontier: list[Gate],
     isFirstIteration: bool,
-    gateToRemove: Gate = None) -> list[list[int]]:
+    gateToRemove: Gate = None):
     
     try:
+        global DAlgoSuccess
+        global faultyWires
+        
         faultyGates: list[Gate] = CircuitHelpers.GetFaultyGates(circuit, fault)
+        faultyWires.append(fault.Wire)
 
         if len(faultyGates) != 0:
             
@@ -94,12 +106,12 @@ def DAlgoRec(
 
             # Get the latest untried gate from the D-Frontier.
             print(f"Log: At {gate.Output.Wire}")
-            controlValue = LogicHelpers.GetControlValue(gate.Type)
+            controlValueDFrontier: int = LogicHelpers.GetControlValue(gate.Type)
             for gateInput in gate.Inputs:
                 
                 # Get inputs of that gate w/ value -1 then set to non control value.
                 if gateInput.Value == -1:
-                    gateInput.Value = int(not controlValue)
+                    gateInput.Value = int(not controlValueDFrontier)
                     print(f"Log: Set non-control value of {gateInput.Value} to {gateInput.Wire}")
 
                 # If this input is not a PI and it is untried, add gate to J-Frontier.
@@ -148,7 +160,8 @@ def DAlgoRec(
             
             if len(JFrontier) == 0:
                 print("J-Frontier is empty.")
-                return True
+                DAlgoSuccess = True
+                return
 
             #select gate from JFrontier
             #find control value of that gate (might be easier to reverse order)
@@ -170,12 +183,17 @@ def DAlgoRec(
 
             # For each input of the gate.
             for gateInput in gateJFrontier.Inputs:
+                if gateInput.Value != -1 and gateInput.IsPrimary and gateInput.Wire not in faultyWires:
+                    gateInput.Value = int(not(controlValueJFrontier))
+                    GateHelpers.SetGatesInputs(circuit.Gates, gateJFrontier.Output)
+                    print(f"Log: Reversed primary input {gateInput.Wire} to {gateInput.Value}")
 
                 # Set the control value to the inputs.
-                if gateInput.Value == -1 and gateInput.IsPrimary:
+                elif gateInput.Value == -1 and gateInput.IsPrimary:
                     gateInput.Value = controlValueJFrontier
                     print(f"Log: Set control value of primary input {gateInput.Wire} to {controlValueJFrontier}")
 
+                
                 # If not primary, add gate to J-Frontier.
                 elif not gateInput.IsPrimary:
                     gateJFrontierToAdd: Gate = GateHelpers.GetGateFromOutput(circuit.Gates, gateInput)
@@ -231,6 +249,7 @@ def DAlgoRec(
         raise Exception(f"DAlgo error\n{e}")
 
 def IsConflict(circuit: Circuit, gate: Gate) -> bool:
+    global DAlgoSuccess
     gateOutput: Output = gate.Output
     inputGates: list[Gate] = GateHelpers.GetGatesFromInput(circuit.Gates, gate.Output)
     
@@ -241,6 +260,8 @@ def IsConflict(circuit: Circuit, gate: Gate) -> bool:
                 if gateInput.Wire == gateOutput.Wire:
                     if gateInput.Value != gateOutput.Value: 
                         print(f"Conflict at {gateInput.Wire}")
-                        return True
+                        DAlgoSuccess = True
+                        return
                     else:
-                        return False
+                        DAlgoSuccess = False
+                        return

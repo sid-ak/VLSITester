@@ -170,13 +170,13 @@ class CircuitHelpers:
                 for gateInput in gate.Inputs:
                     if gateInput.IsPrimary: primaryInputs.append(gateInput)
 
-            for primaryInput in primaryInputs:
+            for primaryInput in circuit.PrimaryInputs:
                 
-                circuitPrimaryInput: Input = next((
-                    e for e in circuit.PrimaryInputs if e.Wire == primaryInput.Wire), None)
+                gatePrimaryInput: Input = next(
+                    (e for e in primaryInputs if e.Wire == primaryInput.Wire), None)
                 
-                if circuitPrimaryInput != None:
-                    circuitPrimaryInput.Value = primaryInput.Value
+                if gatePrimaryInput != None:
+                    primaryInput.Value = gatePrimaryInput.Value
 
         except Exception as e:
             raise Exception(f"Failed to set all primary inputs on circuit {circuit.Name}\m{e}")
