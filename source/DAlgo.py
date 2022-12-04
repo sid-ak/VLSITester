@@ -6,6 +6,7 @@ from helpers.GateHelpers import GateHelpers
 from helpers.CircuitHelpers import CircuitHelpers
 from helpers.LogicHelpers import LogicHelpers
 from helpers.PrintHelpers import PrintHelpers
+from models.Output import Output
 
 # Calls the D-Algorithm and sets initial values.
 def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
@@ -145,9 +146,6 @@ def DAlgoRec(
                 
         if gate.Output.IsPrimary:
             
-            print(
-                f"Success: Fault {fault.Wire}/{fault.Value} propagated to primary output {gate.Output.Wire}")
-        
             if len(JFrontier) == 0:
                 print("J-Frontier is empty.")
                 return True
@@ -184,16 +182,27 @@ def DAlgoRec(
                     JFrontier.append(gateJFrontierToAdd)
                     print(f"Log: Added {gateJFrontierToAdd.Output.Wire} to J-Frontier.")
 
+                    print("\nLog: J-Frontier:")
+                    for JFrontierGate in JFrontier:
+                        print(JFrontierGate.Output.Wire)
+                        print()
+
             gateInputValues: list[int] = list(map(lambda e: e.Value, gateJFrontier.Inputs))
             
             # If justified, remove justified gate from J-Frontier.
             if -1 not in gateInputValues:
                 circuitGate: Gate = GateHelpers.GetGateFromOutput(
                     circuit.Gates, gateJFrontier.Output)
+                
                 GateHelpers.SetGateOutput(circuitGate)
-                GateHelpers.SetGatesInputs(circuit.Gates, gateJFrontier.Output)
+
+                if not IsConflict(circuit, circuitGate):
+                    GateHelpers.SetGatesInputs(circuit.Gates, gateJFrontier.Output)
+                else:
+                    print(f"Conflict at {circuitGate.Output.Wire}")
+                
                 JFrontier.remove(gateJFrontier)
-                print(f"Log: Removed {gateJFrontier.Output.Wire} from J-Frontier.")
+                print(f"Log: Removed {gateJFrontier.Output.Wire} from J-Frontier, already justified.")
                 
                 print("\nLog: J-Frontier:")
                 for JFrontierGate in JFrontier:
@@ -220,3 +229,18 @@ def DAlgoRec(
 
     except Exception as e:
         raise Exception(f"DAlgo error\n{e}")
+
+def IsConflict(circuit: Circuit, gate: Gate) -> bool:
+    gateOutput: Output = gate.Output
+    inputGates: list[Gate] = GateHelpers.GetGatesFromInput(circuit.Gates, gate.Output)
+    
+    for inputGate in inputGates:
+        for inputGate in inputGates:
+            if -1 in list(map(lambda e: e.Value, inputGate.Inputs)): continue
+            for gateInput in inputGate.Inputs:
+                if gateInput.Wire == gateOutput.Wire:
+                    if gateInput.Value != gateOutput.Value: 
+                        print(f"Conflict at {gateInput.Wire}")
+                        return True
+                    else:
+                        return False
