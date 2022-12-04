@@ -58,7 +58,7 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
             
             # If D Algorithm succeeded.
             if DAlgoSuccess:
-                print(f"\n\nVector that detects: {initialFault.Wire}/{initialFault.Value}")
+                print(f"\n\nVector that detects: {initialFault.Wire}/{initialFault.Value} for {circuit.Name}")
                 PrintHelpers.PrintThinDivider()
                 CircuitHelpers.SetAllPrimaryInputs(circuit)
                 
@@ -95,7 +95,6 @@ def DAlgoRec(
             
             # Remove the tried gate from the D-Frontier.
             if gateToRemove != None and gateToRemove in DFrontier:
-                print(f"Output {gateToRemove.Output.Wire}: {gateToRemove.Output.Value}")
                 DFrontier.remove(gateToRemove)
                 print(f"\nLog: Removed {gateToRemove.Output.Wire} from D-Frontier.")
                 print("D-Frontier:")
@@ -150,6 +149,7 @@ def DAlgoRec(
                 # Set gate output and input.
                 GateHelpers.SetGateOutput(gate)
                 GateHelpers.SetGatesInputs(circuit.Gates, gate.Output)
+                print(f"Log: {gate.Output.Wire} -> {gate.Output.Value}")
                 
                 # Check if output wire is not PO.
                 if not gate.Output.IsPrimary:
@@ -186,7 +186,7 @@ def DAlgoRec(
             if gateJFrontier.Type == GateTypeEnum.NOT and len(JFrontier) > 1:
                 controlValueJFrontier = int(not(LogicHelpers.GetControlValue(JFrontier[-2].Type)))
 
-            # For each input of the gate.
+            # For each input of the J-Frontier gate.
             for gateInput in gateJFrontier.Inputs:
                 
                 # If conflict then reverse decision.
@@ -201,7 +201,7 @@ def DAlgoRec(
                     print(f"Log: Set {gateInput.Wire} to control value: {controlValueJFrontier}")
                 
                 # If not primary, add gate to J-Frontier.
-                elif not gateInput.IsPrimary:
+                elif not gateInput.IsPrimary and gateInput.Value != int(not(controlValueJFrontier)):
                     gateJFrontierToAdd: Gate = GateHelpers.GetGateFromOutput(circuit.Gates, gateInput)
                     JFrontier.append(gateJFrontierToAdd)
                     print(f"\nLog: Added {gateJFrontierToAdd.Output.Wire} to J-Frontier.")
@@ -216,6 +216,7 @@ def DAlgoRec(
                     circuit.Gates, gateJFrontier.Output)
                 
                 GateHelpers.SetGateOutput(circuitGate)
+                print(f"Log: {circuitGate.Output.Wire} -> {circuitGate.Output.Value}")
 
                 # Check for conflict and handle.
                 print(f"\nLog: Checking conflict on {circuitGate.Output.Wire}")
