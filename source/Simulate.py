@@ -45,9 +45,8 @@ def Simulate(circuit: Circuit, primaryInputs: list[int], faults: list[Fault] = [
             CircuitHelpers.PrintCircuit(faultFreeCircuit, faultyCircuit)
 
             # Determine the detected faults by comparing the fault free and fault outputs.
-            faultFreeOutputs: list[int] = list(map(lambda e: e.Value, faultFreeCircuit.PrimaryOutputs))
-            for faultyOutput in faultyCircuit.PrimaryOutputs:
-                if faultyOutput.Value not in faultFreeOutputs:
+            for i, faultyOutput in enumerate(faultyCircuit.PrimaryOutputs):
+                if faultyOutput.Value != faultFreeCircuit.PrimaryOutputs[i].Value:
                     fault.IsDetected = True
                     fault.DetectedOn.append(faultyOutput.Wire)
             
