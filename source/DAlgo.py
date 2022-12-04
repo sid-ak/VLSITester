@@ -1,4 +1,5 @@
 import copy
+from FileReader import ReadCircuit
 from enums.GateTypeEnum import GateTypeEnum
 from models.Circuit import Circuit
 from models.Fault import Fault
@@ -23,6 +24,10 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
             
         for fault in faults:
             
+            # Reset circuit.
+            circuitName: str = circuit.Name
+            circuit = ReadCircuit(circuitName)
+
             print(f"\n\nLog: Starting D-Algorithm for fault: {fault.Wire}/{fault.Value}")
             PrintHelpers.PrintThickDivider()
             
@@ -40,7 +45,7 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
             
             initialFault: Fault = copy.deepcopy(fault)
             
-            # Perform D algo.
+            # Perform D algo while resetting the parameters.
             DAlgoRec(
                 circuit,
                 fault,
