@@ -189,6 +189,7 @@ def DAlgoRec(
             # For each input of the gate.
             for gateInput in gateJFrontier.Inputs:
                 
+                # If conflict then reverse decision.
                 if conflictEncountered and gateInput.Value != -1 and gateInput.IsPrimary and gateInput.Wire not in faultyWires:
                     gateInput.Value = int(not(controlValueJFrontier))
                     GateHelpers.SetGatesInputs(circuit.Gates, gateJFrontier.Output)
@@ -219,8 +220,10 @@ def DAlgoRec(
                 # Check for conflict and handle.
                 print(f"\nLog: Checking conflict on {circuitGate.Output.Wire}")
                 if not IsConflict(circuit, circuitGate):
-                    GateHelpers.SetGatesInputs(circuit.Gates, gateJFrontier.Output)
+                    
                     conflictEncountered = False
+                    
+                    GateHelpers.SetGatesInputs(circuit.Gates, gateJFrontier.Output)
 
                     JFrontier.remove(gateJFrontier)
                     print(f"\nLog: Removed justified {gateJFrontier.Output.Wire} from J-Frontier.")
