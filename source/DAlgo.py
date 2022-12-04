@@ -10,16 +10,12 @@ from helpers.LogicHelpers import LogicHelpers
 from helpers.PrintHelpers import PrintHelpers
 from models.Output import Output
 
-faultyWires: list[str] = []
 DAlgoSuccess: bool
 
 # Calls the D-Algorithm and sets initial values.
 def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
     
     try:
-        DFrontier: list[Gate] = list()
-        JFrontier: list[Gate] = list()
-        
         if circuit == None: raise Exception("Circuit was None.")
 
         if faults == []: raise Exception(
@@ -27,10 +23,6 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
             
         for fault in faults:
             
-            # Clear the frontiers.
-            DFrontier.clear()
-            JFrontier.clear()
-
             print(f"\n\nLog: Starting D-Algorithm for fault: {fault.Wire}/{fault.Value}")
             PrintHelpers.PrintThickDivider()
             
@@ -52,9 +44,10 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
             DAlgoRec(
                 circuit,
                 fault,
-                DFrontier,
-                JFrontier,
-                isFirstIteration = True)
+                DFrontier = [],
+                JFrontier = [],
+                isFirstIteration = True,
+                faultyWires = set())
             
             # If D Algorithm succeeded.
             if DAlgoSuccess:
@@ -82,14 +75,14 @@ def DAlgoRec(
     JFrontier: list[Gate],
     isFirstIteration: bool,
     conflictEncountered: bool = False,
-    gateToRemove: Gate = None):
+    gateToRemove: Gate = None,
+    faultyWires: set[str] = set()):
     
     try:
         global DAlgoSuccess
-        global faultyWires
         
         faultyGates: list[Gate] = CircuitHelpers.GetFaultyGates(circuit, fault)
-        faultyWires.append(fault.Wire)
+        faultyWires.add(fault.Wire)
 
         if len(faultyGates) != 0:
             
@@ -166,7 +159,8 @@ def DAlgoRec(
                         JFrontier = JFrontier,
                         isFirstIteration = False,
                         gateToRemove = gate,
-                        conflictEncountered = conflictEncountered)
+                        conflictEncountered = conflictEncountered,
+                        faultyWires = faultyWires)
                 
         if gate.Output.IsPrimary:
             
@@ -250,7 +244,8 @@ def DAlgoRec(
                 DFrontier = DFrontier,
                 JFrontier = JFrontier,
                 isFirstIteration = False,
-                conflictEncountered = conflictEncountered)
+                conflictEncountered = conflictEncountered,
+                faultyWires = faultyWires)
 
     except Exception as e:
         raise Exception(f"DAlgo error\n{e}")
