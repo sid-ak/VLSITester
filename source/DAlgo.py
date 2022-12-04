@@ -243,6 +243,7 @@ def DAlgoRec(
     except Exception as e:
         raise Exception(f"DAlgo error\n{e}")
 
+# Checks if there is a conflict on the specified gate of the circuit.
 def IsConflict(circuit: Circuit, gate: Gate) -> bool:
     gateOutput: Output = gate.Output
     inputGates: list[Gate] = GateHelpers.GetGatesFromInput(circuit.Gates, gate.Output)
@@ -253,7 +254,7 @@ def IsConflict(circuit: Circuit, gate: Gate) -> bool:
             for gateInput in inputGate.Inputs:
                 if gateInput.Wire == gateOutput.Wire:
                     if gateInput.Value != gateOutput.Value: 
-                        print(f"Conflict at {gateInput.Wire}")
+                        print(f"\nLog: Conflict at {gateInput.Wire}")
                         return True
                     else:
                         return False
