@@ -173,7 +173,9 @@ class CircuitHelpers:
             for primaryInput in circuit.PrimaryInputs:
                 
                 gatePrimaryInput: Input = next(
-                    (e for e in gatePrimaryInputs if e.Wire == primaryInput.Wire), None)
+                    (e for e in gatePrimaryInputs
+                        if e.Wire == primaryInput.Wire
+                        and e.Value != -1), None)
                 
                 if gatePrimaryInput != None:
                     primaryInput.Value = gatePrimaryInput.Value
