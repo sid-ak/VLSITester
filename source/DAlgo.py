@@ -65,7 +65,7 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
                 for primaryInput in circuit.PrimaryInputs:
                     if primaryInput.Wire == initialFault.Wire:
                         primaryInput.Value = int(not(initialFault.Value))
-                    print(f"{primaryInput.Wire} - {primaryInput.Value}")
+                    print(f"{primaryInput.Wire} - {'x' if primaryInput.Value == -1 else primaryInput.Value}")
 
                 PrintHelpers.PrintThinDivider()
             
