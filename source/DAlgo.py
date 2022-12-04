@@ -83,7 +83,8 @@ def DAlgoRec(
         for DFrontierGate in DFrontier: print(DFrontierGate.Output.Wire)
         print()
 
-        if not CircuitHelpers.OutputPropagated(circuit):
+        gate: Gate = DFrontier[0] if isFirstIteration else DFrontier[-1]
+        if not gate.Output.IsPrimary or gate.Output.Value == -1:
             
             # If D-Frontier is empty, return failure.
             if len(DFrontier) == 0:
@@ -91,7 +92,6 @@ def DAlgoRec(
                 return False
 
             # Get the latest untried gate from the D-Frontier.
-            gate: Gate = DFrontier[0] if isFirstIteration else DFrontier[-1]
             print(f"Log: At {gate.Output.Wire}")
             controlValue = LogicHelpers.GetControlValue(gate.Type)
             for gateInput in gate.Inputs:
