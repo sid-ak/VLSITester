@@ -76,10 +76,7 @@ class GateHelpers:
             gate.Inputs = gateInputs
 
         except:
-            raise Exception(
-                f"Failed to set gate inputs.\n"
-                + "Faulty circuit."
-                + "\nOne or more wires in the circuit never get set.")
+            raise Exception(f"Failed to set gate inputs for {gate.Output.Wire}.")
     
     # Sets all the inputs for gates that have the matching input wire.
     def SetGatesInputs(gates: list[Gate], gateInputToSet: Input):
@@ -143,7 +140,7 @@ class GateHelpers:
             gate.Output.Value = fault.Value
 
         except Exception as e:
-            raise Exception(f"Failed to set gate output.\n{e}")
+            raise Exception(f"Failed to set gate output for {gate.Output.Wire}.")
 
     # Sets all the inputs and outputs for all gates in a circuit.
     def SetGateInputsOutputs(gates: list[Gate], inputs: list[Input], fault = None):
