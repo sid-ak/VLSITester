@@ -11,43 +11,48 @@ from models.Fault import Fault
 class CircuitHelpers:
 
     def PrintCircuit(circuit: Circuit, faultyCircuit: Circuit = None):
-        PrintHelpers.PrintThickDivider()
 
-        print("\nNote: Value of -1 signifies that the value for that wire has not been set.\n")
-        
-        # Print the primary inputs and its differences from the faulty inputs if exists.
-        print("\nPrimary Inputs")
-        PrintHelpers.PrintThinDivider()
-        for primaryInput in circuit.PrimaryInputs:
-            inputDiff: str = ""
+        try:
+            PrintHelpers.PrintThickDivider()
 
-            if faultyCircuit != None:
-                for faultyInput in faultyCircuit.PrimaryInputs:
-                    if primaryInput.Wire == faultyInput.Wire and primaryInput.Value != faultyInput.Value:
-                        inputDiff = f"->{faultyInput.Value}"
+            print("\nNote: Value of -1 signifies that the value for that wire has not been set.\n")
             
-            print(f"{primaryInput.Wire}\t({primaryInput.Value}{inputDiff})")
+            # Print the primary inputs and its differences from the faulty inputs if exists.
+            print("\nPrimary Inputs")
+            PrintHelpers.PrintThinDivider()
+            for primaryInput in circuit.PrimaryInputs:
+                inputDiff: str = ""
 
-        # Print the primary outputs and its differences from the faulty outputs if exists.
-        print("\n\nPrimary Outputs")
-        PrintHelpers.PrintThinDivider()
-        for primaryOutput in circuit.PrimaryOutputs:
-            outputDiff: str = ""
+                if faultyCircuit != None:
+                    for faultyInput in faultyCircuit.PrimaryInputs:
+                        if primaryInput.Wire == faultyInput.Wire and primaryInput.Value != faultyInput.Value:
+                            inputDiff = f"->{faultyInput.Value}"
+                
+                print(f"{primaryInput.Wire}\t({primaryInput.Value}{inputDiff})")
 
-            if faultyCircuit != None:
-                for faultyOutput in faultyCircuit.PrimaryOutputs:
-                    if primaryOutput.Wire == faultyOutput.Wire and primaryOutput.Value != faultyOutput.Value:
-                        outputDiff = f"->{faultyOutput.Value}"
+            # Print the primary outputs and its differences from the faulty outputs if exists.
+            print("\n\nPrimary Outputs")
+            PrintHelpers.PrintThinDivider()
+            for primaryOutput in circuit.PrimaryOutputs:
+                outputDiff: str = ""
+
+                if faultyCircuit != None:
+                    for faultyOutput in faultyCircuit.PrimaryOutputs:
+                        if primaryOutput.Wire == faultyOutput.Wire and primaryOutput.Value != faultyOutput.Value:
+                            outputDiff = f"->{faultyOutput.Value}"
+                
+                print(f"{primaryOutput.Wire}\t({primaryOutput.Value}{outputDiff})")
+
+            print("\n\nGates")
+            PrintHelpers.PrintThinDivider()
             
-            print(f"{primaryOutput.Wire}\t({primaryOutput.Value}{outputDiff})")
+            # Print the gates.
+            GateHelpers.PrintGates(circuit.Gates, faultyCircuit)
 
-        print("\n\nGates")
-        PrintHelpers.PrintThinDivider()
-        
-        # Print the gates.
-        GateHelpers.PrintGates(circuit.Gates, faultyCircuit)
+            PrintHelpers.PrintThickDivider()
 
-        PrintHelpers.PrintThickDivider()
+        except Exception as e:
+            raise Exception(f"Unable to print circuit {circuit.Name}.\n{e}")
         
     # Sets the primary inputs for a circuit.
     def SetPrimaryInputs(circuit: Circuit, inputs: list[int], fault: Fault = None):
@@ -143,3 +148,37 @@ class CircuitHelpers:
 
         except Exception as e:
             raise Exception(f"Circuit simulation failed.\n{e}")
+
+    # Gets all the gates that have a fault input/output wire on them.
+    def GetFaultyGates(circuit: Circuit, fault: Fault) -> list[Gate]:
+        try:
+            gates: list[Gate] = []
+            for gate in circuit.Gates:
+                for gateInputs in gate.Inputs:
+                    if gateInputs.Wire == fault.Wire:
+                        gates.append(gate)
+
+            return gates
+        except Exception as e:
+            raise Exception(f"Cannot get faulty gates\n{e}")
+
+    def SetAllPrimaryInputs(circuit: Circuit):
+        
+        try:
+            gatePrimaryInputs: list[Input] = []
+            for gate in circuit.Gates:
+                for gateInput in gate.Inputs:
+                    if gateInput.IsPrimary: gatePrimaryInputs.append(gateInput)
+
+            for primaryInput in circuit.PrimaryInputs:
+                
+                gatePrimaryInput: Input = next(
+                    (e for e in gatePrimaryInputs
+                        if e.Wire == primaryInput.Wire
+                        and e.Value != -1), None)
+                
+                if gatePrimaryInput != None:
+                    primaryInput.Value = gatePrimaryInput.Value
+
+        except Exception as e:
+            raise Exception(f"Failed to set all primary inputs on circuit {circuit.Name}\m{e}")
