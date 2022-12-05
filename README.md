@@ -17,4 +17,5 @@ Implements an automatic test generator for single stuck-at faults in Python.
 
 ## Preview
 
+### Option [3] Simulate (with faults)
 ![image](https://user-images.githubusercontent.com/83884673/205535652-d116fa82-6ede-457a-8959-6cac3adf3603.png)
