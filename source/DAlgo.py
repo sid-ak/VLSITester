@@ -17,6 +17,8 @@ DAlgoSuccess: bool
 def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
     
     try:
+        global DAlgoSuccess
+        
         if circuit == None: raise Exception("Circuit was None.")
 
         if faults == []: raise Exception(
@@ -34,14 +36,10 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
             # Set fault for gate.
             for gate in circuit.Gates:
                 for gateInput in gate.Inputs:
-                    inputFault: Fault = next((
-                        e for e in faults if e.Wire == gateInput.Wire), None)
-                    if inputFault == None: continue
-                    gateInput.Value = inputFault.Value
-                outputFault: Fault = next((
-                    e for e in faults if e.Wire == gate.Output.Wire), None)
-                if outputFault  == None: continue
-                gate.Output.Value = outputFault.Value
+                    if gateInput.Wire == fault.Wire:
+                        gateInput.Value == fault.Value
+                if gate.Output.Wire == fault.Wire:
+                    gate.Output.Value = fault.Value
             
             initialFault: Fault = copy.deepcopy(fault)
             
