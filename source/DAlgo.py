@@ -14,7 +14,10 @@ from models.Output import Output
 DAlgoSuccess: bool
 
 # Calls the D-Algorithm and sets initial values.
-def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
+def DAlgorithm(
+    circuit: Circuit,
+    faults: list[Fault] = [],
+    debugMode: bool = False):
     
     try:
         global DAlgoSuccess
@@ -50,7 +53,8 @@ def DAlgorithm(circuit: Circuit, faults: list[Fault] = []):
                 DFrontier = [],
                 JFrontier = [],
                 isFirstIteration = True,
-                faultyWires = set())
+                faultyWires = set(),
+                debugMode = debugMode)
             
             # If D Algorithm succeeded.
             if DAlgoSuccess:
@@ -79,7 +83,8 @@ def DAlgoRec(
     isFirstIteration: bool,
     conflictEncountered: bool = False,
     gateToRemove: Gate = None,
-    faultyWires: set[str] = set()):
+    faultyWires: set[str] = set(),
+    debugMode = False):
     
     try:
         global DAlgoSuccess
@@ -92,17 +97,23 @@ def DAlgoRec(
             # Remove the tried gate from the D-Frontier.
             if gateToRemove != None and gateToRemove in DFrontier:
                 DFrontier.remove(gateToRemove)
-                print(f"\nLog: Removed {gateToRemove.Output.Wire} from D-Frontier.")
-                print("D-Frontier:")
-                for DFrontierGate in DFrontier: print(DFrontierGate.Output.Wire)
+
+                # DEBUG
+                if debugMode:
+                    print(f"\nLog: Removed {gateToRemove.Output.Wire} from D-Frontier.")
+                    print("D-Frontier:")
+                    for DFrontierGate in DFrontier: print(DFrontierGate.Output.Wire)
             
             # Update the D-Frontier.
             for faultyGate in faultyGates:
                 if faultyGate not in DFrontier:
                     DFrontier.append(faultyGate)
-                    print(f"\nLog: Added {faultyGate.Output.Wire} to D-Frontier.")
-                    print("D-Frontier:")
-                    for DFrontierGate in DFrontier: print(DFrontierGate.Output.Wire)
+                    
+                    # DEBUG
+                    if debugMode:
+                        print(f"\nLog: Added {faultyGate.Output.Wire} to D-Frontier.")
+                        print("D-Frontier:")
+                        for DFrontierGate in DFrontier: print(DFrontierGate.Output.Wire)
 
         gate: Gate = DFrontier[0] if isFirstIteration else DFrontier[-1]
         if not gate.Output.IsPrimary or gate.Output.Value == -1:
@@ -113,15 +124,21 @@ def DAlgoRec(
                 DAlgoSuccess = False
                 return
 
+            # DEBUG
+            if debugMode:
+                print(f"\nLog: At {gate.Output.Wire}")
+            
             # Get the latest untried gate from the D-Frontier.
-            print(f"\nLog: At {gate.Output.Wire}")
             controlValueDFrontier: int = LogicHelpers.GetControlValue(gate.Type)
             for gateInput in gate.Inputs:
                 
                 # Get inputs of that gate w/ value -1 then set to non control value.
                 if gateInput.Value == -1:
                     gateInput.Value = int(not controlValueDFrontier)
-                    print(f"Log: Set {gateInput.Wire} to non-control value: {gateInput.Value}")
+
+                    # DEBUG
+                    if debugMode:
+                        print(f"Log: Set {gateInput.Wire} to non-control value: {gateInput.Value}")
 
                 # If this input is not a PI and it is untried, add gate to J-Frontier.
                 if not gateInput.IsPrimary:
@@ -131,9 +148,12 @@ def DAlgoRec(
                     
                         if gateJFrontier != None:
                             JFrontier.append(gateJFrontier)
-                            print(f"\nLog: Added {gateJFrontier.Output.Wire} to J-Frontier.")
-                            print("J-Frontier:")
-                            for JFrontierGate in JFrontier: print(JFrontierGate.Output.Wire)
+
+                            # DEBUG
+                            if debugMode:
+                                print(f"\nLog: Added {gateJFrontier.Output.Wire} to J-Frontier.")
+                                print("J-Frontier:")
+                                for JFrontierGate in JFrontier: print(JFrontierGate.Output.Wire)
                     
             firstInput: Input = gate.Inputs[0]
             secondInput: Input = None
@@ -145,7 +165,10 @@ def DAlgoRec(
                 # Set gate output and input.
                 GateHelpers.SetGateOutput(gate)
                 GateHelpers.SetGatesInputs(circuit.Gates, gate.Output)
-                print(f"Log: {gate.Output.Wire} -> {gate.Output.Value}")
+
+                # DEBUG
+                if debugMode:
+                    print(f"Log: {gate.Output.Wire} -> {gate.Output.Value}")
                 
                 # Check if output wire is not PO.
                 if not gate.Output.IsPrimary:
@@ -163,18 +186,26 @@ def DAlgoRec(
                         isFirstIteration = False,
                         gateToRemove = gate,
                         conflictEncountered = conflictEncountered,
-                        faultyWires = faultyWires)
+                        faultyWires = faultyWires,
+                        debugMode = debugMode)
                 
         if gate.Output.IsPrimary:
             
             if len(JFrontier) == 0:
-                print("\nLog: J-Frontier is empty.")
+                
+                # DEBUG
+                if debugMode:
+                    print("\nLog: J-Frontier is empty.")
+                
                 DAlgoSuccess = True
                 return
 
             # If not empty, then get a gate from the J-Frontier.
             gateJFrontier: Gate = JFrontier[-1]
-            print(f"\nLog: Justifying {gateJFrontier.Output.Wire}.")
+
+            # DEBUG
+            if debugMode:
+                print(f"\nLog: Justifying {gateJFrontier.Output.Wire}.")
 
             # Get control value for the gate in J-Frontier.
             controlValueJFrontier: int = LogicHelpers.GetControlValue(gateJFrontier.Type)
@@ -190,20 +221,29 @@ def DAlgoRec(
                 if conflictEncountered and gateInput.Value != -1 and gateInput.IsPrimary and gateInput.Wire not in faultyWires:
                     gateInput.Value = int(not(controlValueJFrontier))
                     GateHelpers.SetGatesInputs(circuit.Gates, gateJFrontier.Output)
-                    print(f"Log: Inverted primary input {gateInput.Wire} to {gateInput.Value}")
+
+                    # DEBUG
+                    if debugMode:
+                        print(f"Log: Inverted primary input {gateInput.Wire} to {gateInput.Value}")
 
                 # Set the control value to the inputs.
                 elif gateInput.Value == -1 and gateInput.IsPrimary:
                     gateInput.Value = controlValueJFrontier
-                    print(f"Log: Set {gateInput.Wire} to control value: {controlValueJFrontier}")
+
+                    # DEBUG
+                    if debugMode:
+                        print(f"Log: Set {gateInput.Wire} to control value: {controlValueJFrontier}")
                 
                 # If not primary, add gate to J-Frontier.
                 elif not gateInput.IsPrimary and gateInput.Value != int(not(controlValueJFrontier)):
                     gateJFrontierToAdd: Gate = GateHelpers.GetGateFromOutput(circuit.Gates, gateInput)
                     JFrontier.append(gateJFrontierToAdd)
-                    print(f"\nLog: Added {gateJFrontierToAdd.Output.Wire} to J-Frontier.")
-                    print("J-Frontier:")
-                    for JFrontierGate in JFrontier: print(JFrontierGate.Output.Wire)
+
+                    # DEBUG
+                    if debugMode:
+                        print(f"\nLog: Added {gateJFrontierToAdd.Output.Wire} to J-Frontier.")
+                        print("J-Frontier:")
+                        for JFrontierGate in JFrontier: print(JFrontierGate.Output.Wire)
 
             gateInputValues: list[int] = list(map(lambda e: e.Value, gateJFrontier.Inputs))
             
@@ -213,32 +253,42 @@ def DAlgoRec(
                     circuit.Gates, gateJFrontier.Output)
                 
                 GateHelpers.SetGateOutput(circuitGate)
-                print(f"Log: {circuitGate.Output.Wire} -> {circuitGate.Output.Value}")
 
+                # DEBUG
+                if debugMode:
+                    print(f"Log: {circuitGate.Output.Wire} -> {circuitGate.Output.Value}")
+                    print(f"\nLog: Checking conflict on {circuitGate.Output.Wire}")
+                
                 # Check for conflict and handle.
-                print(f"\nLog: Checking conflict on {circuitGate.Output.Wire}")
                 if not IsConflict(circuit, circuitGate):
                     
                     conflictEncountered = False
-                    
                     GateHelpers.SetGatesInputs(circuit.Gates, gateJFrontier.Output)
-
                     JFrontier.remove(gateJFrontier)
-                    print(f"\nLog: Removed justified {gateJFrontier.Output.Wire} from J-Frontier.")
-                    print("J-Frontier:")
-                    for JFrontierGate in JFrontier: print(JFrontierGate.Output.Wire)
+
+                    # DEBUG
+                    if debugMode:
+                        print(f"\nLog: Removed justified {gateJFrontier.Output.Wire} from J-Frontier.")
+                        print("J-Frontier:")
+                        for JFrontierGate in JFrontier: print(JFrontierGate.Output.Wire)
 
                     # Remove from D-Frontier if exists.
                     if gateJFrontier in DFrontier:
                         DFrontier.remove(gateJFrontier)
-                        print(f"\nLog: Removed {gateJFrontier.Output.Wire} from D-Frontier.")
-                        print("D-Frontier:")
-                        for DFrontierGate in DFrontier: print(DFrontierGate.Output.Wire)
+
+                        # DEBUG
+                        if debugMode:
+                            print(f"\nLog: Removed {gateJFrontier.Output.Wire} from D-Frontier.")
+                            print("D-Frontier:")
+                            for DFrontierGate in DFrontier: print(DFrontierGate.Output.Wire)
                 
                 else:
                     conflictEncountered = True
                     DAlgoSuccess = False
-                    print(f"Log: Conflict on {circuitGate.Output.Wire}")
+
+                    # DEBUG
+                    if debugMode:
+                        print(f"Log: Conflict on {circuitGate.Output.Wire}")
                 
             # Call recursively.
             DAlgoRec(
@@ -248,10 +298,12 @@ def DAlgoRec(
                 JFrontier = JFrontier,
                 isFirstIteration = False,
                 conflictEncountered = conflictEncountered,
-                faultyWires = faultyWires)
+                faultyWires = faultyWires,
+                debugMode = debugMode)
 
-    except Exception as e:
-        raise Exception(f"DAlgo error\n{e}")
+    except:
+        DAlgoSuccess = False
+        return
 
 # Checks if there is a conflict on the specified gate of the circuit.
 def IsConflict(circuit: Circuit, gate: Gate) -> bool:

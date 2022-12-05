@@ -20,9 +20,11 @@ while(True):
     try:
         choice: int = int(input("Selection: "))
         
+        # [0] Read the input net-list
         if choice == 0:
             circuit = readFile.ReadFile()
         
+        # [1] Perform fault collapsing
         elif choice == 1:
             if circuit == None:
                 raise Exception(
@@ -34,6 +36,7 @@ while(True):
             
             collapsedFaults: list[Fault] = FaultCollapser.Collapse(circuit)
         
+        # [2] List fault classes
         elif choice == 2:
             if circuit == None:
                 raise Exception(
@@ -46,6 +49,7 @@ while(True):
             collapsedFaults: list[Fault] = FaultCollapser.Collapse(
                 circuit, listCollapsedFaults = True)
 
+        # [3] Simulate
         elif choice == 3:
             if circuit == None:
                 raise Exception(
@@ -71,6 +75,7 @@ while(True):
             # Simulate the circuit using the vector and faults.
             simulation.Simulate(circuit, inputs, faults)
         
+        # [4] Generate tests (D-Algorithm)
         elif choice == 4:
             if circuit == None:
                 raise Exception(
@@ -84,8 +89,11 @@ while(True):
             circuitName: str = circuit.Name
             circuit = readFile.ReadCircuit(circuitName)
             
-            DAlgorithm.DAlgorithm(circuit, faults)
+            debugMode: bool = bool(int(input("Debug mode? (1/0): ")))
+            
+            DAlgorithm.DAlgorithm(circuit, faults, debugMode)
         
+        # [5] Exit
         elif choice == 5:
             break
         
