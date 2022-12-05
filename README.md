@@ -12,7 +12,7 @@ Implements an automatic test generator for single stuck-at faults in Python.
 ## Getting Started
 - Ensure python 3.10 or higher is installed.
 - Extract VLSITester-main.zip.
-- Run command in the directory source: python main.py
+- Run command in the directory named `source`: `python main.py`
 - To test your own circuit, place file with correct format in directory: benchmarks
 
 ## Preview
