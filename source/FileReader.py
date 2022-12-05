@@ -13,6 +13,7 @@ PRIMARY_OUT_STR: str = "primary output"
 
 def GetFileNames() -> list[str]:
     return [
+        "Type file name",
         "netlist.txt",
         "t4_3.ckt",
         "t4_21.ckt",
@@ -28,11 +29,15 @@ def ReadFile(circuitName: str = "") -> Circuit:
 
         # Get file name.
         fileNames: list[str] = GetFileNames()
-        print("\nPlease select one of the following input files:\n")
+        print("\nPlease select one of the following input files or type a file name:\n")
         for i, name in enumerate(fileNames): print(f"[{i}] {name}")
+
         fileNameSelection: str = int(input("\nSelection: "))
-        fileName: str = fileNames[fileNameSelection]
-        if circuitName != "": fileName = circuitName        
+        fileName: str = ""
+        if fileNameSelection == 0:
+            fileName = input("File name: ")
+        else: fileName = fileNames[fileNameSelection]
+        if circuitName != "": fileName = circuitName
         
         # Build the circuit.
         circuit: Circuit = ReadCircuit(fileName)
